@@ -9,7 +9,7 @@ public class MainMenuPanel extends JPanel {
     final int WIDTH = 1100;
     final int HEIGH = 700;
     MainMenuPanel(){
-        image = new ImageIcon(new ImageIcon("image/background.jpg").getImage().getScaledInstance(WIDTH, HEIGH, Image.SCALE_SMOOTH)).getImage();
+        image = new ImageIcon(new ImageIcon("Image/background.jpg").getImage().getScaledInstance(WIDTH, HEIGH, Image.SCALE_SMOOTH)).getImage();
         this.setPreferredSize(new Dimension(1100, 700));
     }
 
