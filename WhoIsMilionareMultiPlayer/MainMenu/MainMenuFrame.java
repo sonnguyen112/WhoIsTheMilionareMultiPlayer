@@ -20,6 +20,7 @@ public class MainMenuFrame extends JFrame implements ActionListener {
         textField.setBackground(Color.black);
         textField.setCaretColor(Color.white); //Color of "con trỏ nhấp nháy"
         textField.setText("Enter Your Name");
+        textField.setHorizontalAlignment(JTextField.CENTER);
         textField.setBounds(Common.WIDTH / 2 - 350/2, Common.HEIGHT/2 + 100, 350, 40);
 
         button = new JButton();
@@ -51,7 +52,7 @@ public class MainMenuFrame extends JFrame implements ActionListener {
             else {
                 JOptionPane.showMessageDialog(null, "The " +
                                 "nickname is composed by the following characters ‘a’...’z’, ‘A’...’Z’, ‘0’...’9’, ‘_’ \n" +
-                                "and the length is not longer than 10 characters", "title",
+                                "and the length is not longer than 10 characters", "Invalid Nickname",
                         JOptionPane.WARNING_MESSAGE);
             }
         }
