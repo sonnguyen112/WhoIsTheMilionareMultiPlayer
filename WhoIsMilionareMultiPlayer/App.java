@@ -1,4 +1,4 @@
-import WaitingRoom.WaitingRoomFrame;
+
 
 import java.awt.*;
 
@@ -10,7 +10,7 @@ public class App {
             @Override
             public void run() {
                 // new MainMenuFrame();
-                // new WaitingRoomFrame();
+               
             }
         });
       
