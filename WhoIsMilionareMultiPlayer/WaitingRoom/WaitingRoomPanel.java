@@ -1,15 +1,13 @@
-package MainMenu;
-
+package WaitingRoom;
 import javax.swing.*;
 import java.awt.*;
 
-public class MainMenuPanel extends JPanel {
-
+public class WaitingRoomPanel extends JPanel{
     Image image;
     final int WIDTH = 1100;
     final int HEIGH = 700;
-    MainMenuPanel(){
-        image = new ImageIcon(new ImageIcon("Image/bg-top8.png").getImage().getScaledInstance(WIDTH, HEIGH, Image.SCALE_SMOOTH)).getImage();
+    WaitingRoomPanel(){
+        image = new ImageIcon(new ImageIcon("Image/play_button.png").getImage().getScaledInstance(WIDTH, HEIGH, Image.SCALE_SMOOTH)).getImage();
         this.setPreferredSize(new Dimension(1100, 700));
     }
 
