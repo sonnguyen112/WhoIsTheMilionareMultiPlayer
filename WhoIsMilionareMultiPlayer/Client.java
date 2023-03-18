@@ -2,11 +2,9 @@
 
 import java.awt.*;
 
-import MainMenu.MainMenuFrame;
 import PlayingRoom.PlayingRoomFrame;
-import WaitingRoom.WaitingRoomFrame;
 
-public class App {
+public class Client {
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             @Override

@@ -3,7 +3,7 @@ import Common.Common;
 
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.JPanel;
+
 
 public class WaitingRoomPanel extends JLabel{
     ImageIcon image;

@@ -14,14 +14,16 @@ public class PlayingRoomPanel extends JLabel {
     JLabel label3;
     JLabel label4;
     JLabel questionLabel;
-    JLabel option1;
-    JLabel option2;
-    JLabel option3;
-    JLabel option4;
+    JButton option1;
+    JButton option2;
+    JButton option3;
+    JButton option4;
     JLabel clock;
     ImageIcon image;
+    JButton skipButton;
     PlayingRoomPanel(){
         image = new ImageIcon(new ImageIcon("Image/background_2.jpg").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
+        ImageIcon skipButtonImg = new ImageIcon(new ImageIcon("Image/skip_button.png").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
         this.setPreferredSize(new Dimension(Common.WIDTH, Common.HEIGHT));
         this.setIcon(image);
         this.setLayout(null);
@@ -31,10 +33,10 @@ public class PlayingRoomPanel extends JLabel {
         label3 = new JLabel();
         label4 = new JLabel();
         questionLabel = new JLabel();
-        option1 = new JLabel();
-        option2 = new JLabel();
-        option3 = new JLabel();
-        option4 = new JLabel();
+        option1 = new JButton();
+        option2 = new JButton();
+        option3 = new JButton();
+        option4 = new JButton();
         clock = new JLabel();
 
         label1.setOpaque(true);
@@ -73,12 +75,19 @@ public class PlayingRoomPanel extends JLabel {
         label2.setBounds(50, 120, 200, 50);
         label3.setBounds(50, 190, 200, 50);
         label4.setBounds(50, 260, 200, 50);
-        questionLabel.setBounds(Common.WIDTH/2 - 400, 400, 800, 50);
-        option1.setBounds(Common.WIDTH/2 - 400 + 100, 500, 200, 50);
-        option2.setBounds(Common.WIDTH/2 - 400 + 800 -200 - 100, 500, 200, 50);
-        option3.setBounds(Common.WIDTH/2 - 400 + 100, 600, 200, 50);
-        option4.setBounds(Common.WIDTH/2 - 400 + 800 -200 - 100, 600, 200, 50);
-        clock.setBounds(1000, 50, 50, 50);
+        questionLabel.setBounds(300, 50, 600, 260);
+        JPanel optionPanel = new JPanel();
+        optionPanel.setLayout(new GridLayout(2, 2, 20, 20));
+        optionPanel.setOpaque(false);
+        optionPanel.setBounds(50, 360, 850, 300);
+        optionPanel.add(option1);
+        optionPanel.add(option2);
+        optionPanel.add(option3);
+        optionPanel.add(option4);
+        clock.setBounds(950, 130, 100, 100);
+        clock.setFont(new Font(null, Font.BOLD, 50));
+        clock.setForeground(Color.WHITE);
+        clock.setOpaque(false);
 
         label1.setText("NickName");
         label2.setText("NickName");
@@ -91,17 +100,21 @@ public class PlayingRoomPanel extends JLabel {
         option4.setText("Option 4");
         clock.setText("00");
 
+        skipButton = new JButton();
+        skipButton.setIcon(skipButtonImg);
+        skipButton.setBounds(950, 460, 100, 100);
+        skipButton.setOpaque(false);
+        skipButton.setContentAreaFilled(false);
+        skipButton.setBorderPainted(false);
 
         this.add(label1);
         this.add(label2);
         this.add(label3);
         this.add(label4);
         this.add(questionLabel);
-        this.add(option1);
-        this.add(option2);
-        this.add(option3);
-        this.add(option4);
+        this.add(optionPanel);
         this.add(clock);
+        this.add(skipButton);
 
     }
 

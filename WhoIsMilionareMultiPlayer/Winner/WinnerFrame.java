@@ -1,11 +1,11 @@
-package WaitingRoom;
+package Winner;
 
 import javax.swing.*;
 
 
-public class WaitingRoomFrame extends JFrame{
-    public WaitingRoomFrame(){
-        this.add(new WaitingRoomPanel());
+public class WinnerFrame extends JFrame{
+    public WinnerFrame(){
+        this.add(new WinnerPanel());
         this.pack();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
