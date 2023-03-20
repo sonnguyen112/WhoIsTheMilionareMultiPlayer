@@ -11,6 +11,7 @@ public class System {
     }
 
     private Question currentQuestion = new Question();
+    private int currentPlayer;
 
     public void GetQuestion(){
         //GET NEW QUESTION FROM DATABASE FUNCTION, UPDATE CURRENT QUESTION
@@ -27,7 +28,7 @@ public class System {
 
     }
 
-    public void sendQuestion(int n){
+    public void sendQuestion(){
         //SEND QUESTION TO PLAYER WITH INDEX = N
 
     }
