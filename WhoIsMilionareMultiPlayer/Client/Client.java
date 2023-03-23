@@ -1,3 +1,4 @@
+package Client;
 
 
 import java.awt.*;
@@ -11,8 +12,8 @@ public class Client {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                 new MainMenuFrame();
-//                new WaitingRoomFrame();
+                //  new MainMenuFrame();
+               new WaitingRoomFrame();
 //                new PlayingRoomFrame();
                
             }
