@@ -11,7 +11,7 @@ public class System {
     }
 
     private Question currentQuestion = new Question();
-    private int currentPlayer;
+    private int currentPlayer = 0;
 
     public void GetQuestion(){
         //GET NEW QUESTION FROM DATABASE FUNCTION, UPDATE CURRENT QUESTION
@@ -23,9 +23,10 @@ public class System {
         return true;
     }
 
-    public void UpdateInfo(){
+    public int UpdateInfo(boolean correctAns){
         //UPDATE INFORMATION TO 4 PLAYER: send PlayerList to 4 players
 
+        return -1;
     }
 
     public void sendQuestion(){
@@ -38,5 +39,25 @@ public class System {
         
         //WAIT FOR PLAYER'S ANSWER
         return 0;
+    }
+
+    public void waitForPlayer(){
+        //  SYSTEM WAIT FOR PLAYERS, IF GAME BEGIN, THIS FUNCTION WILL RETURN
+        //  REMEMBER TO UPDATE PLAYER LIST
+    }
+
+    public void play(){
+        while(true){
+            this.GetQuestion();
+            this.sendQuestion();
+            int answer = this.getAnswer();
+            boolean correctAns = this.CheckAnswer(answer);
+            int endgame = this.UpdateInfo(correctAns);
+
+            if (endgame != -1){
+                //  GAME IS OVER, SERVER GOES OFF, ALL PLAYERS AFTER UPDATE INFO WILL SHOW RESULT SCREEN
+                break;
+            }
+        }
     }
 }
