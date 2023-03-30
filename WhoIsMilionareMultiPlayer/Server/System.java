@@ -1,10 +1,39 @@
 package Server;
-
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import Question.Question;
 
-public class System {
+public class System{
     private System(){}
     private static final System sys = new System();
+    
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
+    private PrintWriter out;
+    private BufferedReader in;
+
+    private void start(int port) throws IOException{
+        serverSocket = new ServerSocket(port);
+        clientSocket = serverSocket.accept();
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String greeting = in.readLine();
+            if ("hello server".equals(greeting)) {
+                out.println("hello client");
+            }
+            else {
+                out.println("unrecognised greeting");
+            }
+    }
+
+    private void stop() throws IOException{
+        in.close();
+        out.close();
+        clientSocket.close();
+        serverSocket.close();
+    }
+
 
     public static System getInstance(){
         return sys;
@@ -47,6 +76,14 @@ public class System {
     }
 
     public void play(){
+        try{
+            this.start(3333);
+
+            this.stop();
+        }
+        catch(IOException exc){
+
+        }
         while(true){
             this.GetQuestion();
             this.sendQuestion();
