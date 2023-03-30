@@ -1,7 +1,7 @@
-package Client;
+package Client.System;
 
 import Question.Question;
-import Server.System;
+import Server.System.ServerSystem;
 
 public class ClientSystem {
     private ClientSystem(){}

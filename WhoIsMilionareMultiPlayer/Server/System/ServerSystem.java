@@ -1,41 +1,41 @@
-package Server;
+package Server.System;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import Question.Question;
 
-public class System{
-    private System(){}
-    private static final System sys = new System();
+import Server.Request.VirtualRequest;
+
+public class ServerSystem{
+    private ServerSystem(){}
+    private static final ServerSystem sys = new ServerSystem();
     
     private ServerSocket serverSocket;
-    private Socket clientSocket;
+    private Socket clientSocket1, clienSocket2, clienSocket3, clienSocket4;
     private PrintWriter out;
     private BufferedReader in;
 
+    private VirtualRequest messHandler(String mess){
+        return null;
+    }
+
+    private void eventHandler(VirtualRequest request){
+        //HANDLE REQUEST
+    }
+
     private void start(int port) throws IOException{
         serverSocket = new ServerSocket(port);
-        clientSocket = serverSocket.accept();
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        String greeting = in.readLine();
-            if ("hello server".equals(greeting)) {
-                out.println("hello client");
-            }
-            else {
-                out.println("unrecognised greeting");
-            }
+        
     }
 
     private void stop() throws IOException{
         in.close();
         out.close();
-        clientSocket.close();
+        clientSocket1.close();
         serverSocket.close();
     }
 
 
-    public static System getInstance(){
+    public static ServerSystem getInstance(){
         return sys;
     }
 
