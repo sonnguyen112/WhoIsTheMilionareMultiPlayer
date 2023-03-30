@@ -2,11 +2,13 @@ package Server;
 
 import Server.System.ClientHandler;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server {
+    static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     public static void main(String[] args) throws IOException {
         ServerSocket ss = new ServerSocket(3333);
         System.out.println("Server is running....");
