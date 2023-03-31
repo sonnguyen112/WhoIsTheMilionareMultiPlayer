@@ -1,10 +1,11 @@
-package PlayingRoom;
-
-import Common.Common;
+package Client.PlayingRoom;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+
+import Client.Common.Common;
+
 import java.awt.*;
 
 public class PlayingRoomPanel extends JLabel {

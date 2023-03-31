@@ -1,14 +1,21 @@
 package Client.System;
 
-import Question.Question;
+import java.io.IOException;
+
+import Client.Player.Player;
+import Client.Player.PlayerList;
 import Server.System.ServerSystem;
 
 public class ClientSystem {
     private ClientSystem(){}
     private static final ClientSystem sys = new ClientSystem();
-
     public static ClientSystem getInstance(){
         return sys;
+    }
+
+    public void initPlayer(String name){
+        Player you = new Player(name);
+        PlayerList.getInstance().add(you);
     }
 
     public void sendToServer(int answer){
@@ -37,34 +44,22 @@ public class ClientSystem {
         //ELSE SHOW LOSE INTERFACE
 
         return false; //RETURN FALSE IF GAME IS NOT OVER, TRUE IF GAME IS OVER
-    }  
-
-    public boolean joinGame(){
-        //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
-
-        return false; //    RETURN TRUE IF SUCESS, FALSE IF FAIL
     }
 
-    public void playGame(){
-        if (this.joinGame()){
-            //JOIN GAME SUCCESSFULLY
-
-            //LAUNCH WAITING INTERFACE
+    public String joinGame(String playername, String ipaddr, int port) throws ClassNotFoundException{
+        //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
+        try {
+            this.initPlayer(playername);
+            SocketHandler.getInstance().startConnection(ipaddr, port);
+            String mess = SocketHandler.getInstance().sendMessage("{\"event\": \"join_room\", \"name\":"+ playername + "}");
+            return mess;
         }
-        else{
-            //CANNOT JOIN THE GAME
+        catch(IOException ex){
+            return "null";
         }
+    }
 
-
-        while (true){
-            Question ques = this.receiveFromServer();
-            this.showQuestion(ques);
-            int ans = this.getAnswerFromPlayer();
-            this.sendToServer(ans);
-
-            if (this.getResultUpdateFromServer()){
-                break;
-            }
-        }
+    public String handleMessage(String servermess) {
+        return null;
     }
 }

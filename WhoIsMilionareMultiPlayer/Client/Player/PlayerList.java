@@ -1,4 +1,4 @@
-package Player;
+package Client.Player;
 
 public class PlayerList {
     /*

@@ -1,4 +1,4 @@
-package Common;
+package Client.Common;
 
 import java.net.SocketImpl;
 

@@ -1,9 +1,12 @@
-package MainMenu;
-
-import Common.Common;
-import Utils.Vadiation;
+package Client.MainMenu;
 
 import javax.swing.*;
+
+import Client.Common.Common;
+import Client.PlayingRoom.PlayingRoomFrame;
+import Client.System.ClientSystem;
+import Client.Utils.Vadiation;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,19 +44,39 @@ public class MainMenuPanel extends JLabel implements ActionListener {
 
         this.add(textField);
         this.add(button);
+
+    }
+
+    private void notification(String mess, String type){
+        JOptionPane.showMessageDialog(null, mess, type, JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == button){
-            if (Vadiation.checkNickName(textField.getText())){
+            String playerName = textField.getText();
+            if (Vadiation.checkNickName(playerName)){
                 System.out.println("OK");
+                try {
+                    String servermess = ClientSystem.getInstance().joinGame(playerName, "127.0.0.1", 1234);
+                    servermess = ClientSystem.getInstance().handleMessage(servermess);
+                    switch (servermess){
+                        case "FAIL":
+                            this.notification("ROOM IS FULL", "FAIL");
+                            break;
+                        case "SUCESS":
+                            
+                            new PlayingRoomFrame();
+                            break;
+                    }
+                } catch (ClassNotFoundException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
             else {
-                JOptionPane.showMessageDialog(null, "The " +
-                                "nickname is composed by the following characters ‘a’...’z’, ‘A’...’Z’, ‘0’...’9’, ‘_’ \n" +
-                                "and the length is not longer than 10 characters", "Invalid Nickname",
-                        JOptionPane.WARNING_MESSAGE);
+                this.notification("The nickname is composed by the following characters ‘a’...’z’, ‘A’...’Z’, ‘0’...’9’, ‘_’ \n" +
+                                "and the length is not longer than 10 characters", "Invalid Nickname");
             }
         }
     }

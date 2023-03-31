@@ -1,9 +1,9 @@
-package MainMenu;
-
-import Common.Common;
-import Utils.Vadiation;
+package Client.MainMenu;
 
 import javax.swing.*;
+
+import Client.Common.Common;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,5 +17,8 @@ public class MainMenuFrame extends JFrame{
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+
+
+        
     }
 }
