@@ -13,13 +13,26 @@ public class ClientSystem {
         return sys;
     }
 
+    public final int CONNECT_TO_SERVER = 0;
+    public final int SEND_ANWSER = 1;
+
     public void initPlayer(String name){
         Player you = new Player(name);
         PlayerList.getInstance().add(you);
     }
 
-    public void sendToServer(int answer){
+    private String renderMess(int type, int aws){
+        switch (type){
+            case CONNECT_TO_SERVER:
+            break;
+            case SEND_ANWSER:
+            break;
+        }
+        return "";
+    }
 
+    public void sendToServer(int answer){
+        String respond = SocketHandler.getInstance().sendMessage(renderMess(SEND_ANWSER, answer));
     }
 
     public void showQuestion(Question ques){
@@ -48,15 +61,10 @@ public class ClientSystem {
 
     public String joinGame(String playername, String ipaddr, int port) throws ClassNotFoundException{
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
-        try {
-            this.initPlayer(playername);
-            SocketHandler.getInstance().startConnection(ipaddr, port);
-            String mess = SocketHandler.getInstance().sendMessage("{\"event\": \"join_room\", \"name\":"+ playername + "}");
-            return mess;
-        }
-        catch(IOException ex){
-            return "null";
-        }
+        this.initPlayer(playername);
+        SocketHandler.getInstance().startConnection(ipaddr, port);
+        String mess = SocketHandler.getInstance().sendMessage("{\"event\": \"join_room\", \"name\":"+ playername + "}");
+        return mess;
     }
 
     public String handleMessage(String servermess) {

@@ -65,7 +65,7 @@ public class MainMenuPanel extends JLabel implements ActionListener {
                             this.notification("ROOM IS FULL", "FAIL");
                             break;
                         case "SUCESS":
-                            
+                            this.setVisible(false);
                             new PlayingRoomFrame();
                             break;
                     }

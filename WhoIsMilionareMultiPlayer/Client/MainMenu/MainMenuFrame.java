@@ -16,9 +16,6 @@ public class MainMenuFrame extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
-
-
-        
+        this.setVisible(true);        
     }
 }

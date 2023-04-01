@@ -1,11 +1,8 @@
 package Client.System;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class SocketHandler {
     private Socket clientSocket;
@@ -18,21 +15,36 @@ public class SocketHandler {
         return singleton;
     }
     
-    public void startConnection(String ip, int port) throws UnknownHostException, IOException {
-        clientSocket = new Socket(ip, port);
-        out = new ObjectOutputStream(clientSocket.getOutputStream());
-        in = new ObjectInputStream(clientSocket.getInputStream());
+    public void startConnection(String ip, int port){
+        try {
+            clientSocket = new Socket(ip, port);
+            out = new ObjectOutputStream(clientSocket.getOutputStream());
+            in = new ObjectInputStream(clientSocket.getInputStream());
+        }
+        catch (Exception ex){
+
+        }
     }
 
-    public String sendMessage(String msg) throws IOException, ClassNotFoundException {
+    public String sendMessage(String msg){
+        try {
         if (msg != "") out.writeObject(msg);
         String listen = (String) in.readObject();
         return listen;
+        }
+        catch (Exception ex){
+            return "";
+        }
     }
 
-    public void stopConnection() throws IOException {
-        in.close();
-        out.close();
-        clientSocket.close();
+    public void stopConnection(){
+        try {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+        catch (Exception ex){
+
+        }
     }
 }
