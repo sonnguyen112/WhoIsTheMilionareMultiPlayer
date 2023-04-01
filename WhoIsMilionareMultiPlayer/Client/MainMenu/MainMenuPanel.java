@@ -19,7 +19,7 @@ public class MainMenuPanel extends JLabel implements ActionListener {
     JTextField textField;
     MainMenuPanel(){
 
-        background_main = new ImageIcon(new ImageIcon("Image/background.jpg").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
+        background_main = new ImageIcon(new ImageIcon("Client/Image/background.jpg").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
         this.setPreferredSize(new Dimension(Common.WIDTH, Common.HEIGHT));
         this.setIcon(background_main);
         this.setLayout(null);
@@ -34,7 +34,7 @@ public class MainMenuPanel extends JLabel implements ActionListener {
         textField.setBounds(Common.WIDTH / 2 - 350/2, Common.HEIGHT/2 + 100, 350, 40);
 
         button = new JButton();
-        ImageIcon icon = new ImageIcon(new ImageIcon("Image/play_button.jpg").getImage().getScaledInstance(213, 115, Image.SCALE_DEFAULT));
+        ImageIcon icon = new ImageIcon(new ImageIcon("Client/Image/play_button.jpg").getImage().getScaledInstance(213, 115, Image.SCALE_DEFAULT));
         button.setIcon(icon);
         button.setBounds(Common.WIDTH / 2 - 213/2, Common.HEIGHT/2 + 200, 213, 115);
         button.setOpaque(false);

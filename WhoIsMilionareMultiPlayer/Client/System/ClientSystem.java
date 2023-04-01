@@ -24,9 +24,9 @@ public class ClientSystem {
     private String renderMess(int type, int aws){
         switch (type){
             case CONNECT_TO_SERVER:
-            break;
+            return "";
             case SEND_ANWSER:
-            break;
+            return "";
         }
         return "";
     }
