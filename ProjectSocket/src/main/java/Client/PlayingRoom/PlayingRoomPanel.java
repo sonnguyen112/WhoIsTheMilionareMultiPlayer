@@ -1,10 +1,11 @@
 package Client.PlayingRoom;
 
-import Common.Common;
-
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+
+import Client.Common.Common;
+
 import java.awt.*;
 
 public class PlayingRoomPanel extends JLabel {
@@ -22,8 +23,8 @@ public class PlayingRoomPanel extends JLabel {
     ImageIcon image;
     JButton skipButton;
     PlayingRoomPanel(){
-        image = new ImageIcon(new ImageIcon("Image/background_2.jpg").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
-        ImageIcon skipButtonImg = new ImageIcon(new ImageIcon("Image/skip_button.png").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+        image = new ImageIcon(new ImageIcon("src/main/java/Client/Image/background_2.jpg").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
+        ImageIcon skipButtonImg = new ImageIcon(new ImageIcon("src/main/java/Client/Image/skip_button.png").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
         this.setPreferredSize(new Dimension(Common.WIDTH, Common.HEIGHT));
         this.setIcon(image);
         this.setLayout(null);
