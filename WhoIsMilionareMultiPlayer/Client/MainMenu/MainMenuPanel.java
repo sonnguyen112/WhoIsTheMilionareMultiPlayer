@@ -57,9 +57,10 @@ public class MainMenuPanel extends JLabel implements ActionListener {
             String playerName = textField.getText();
             if (Vadiation.checkNickName(playerName)){
                 System.out.println("OK");
-                try {
-                    String servermess = ClientSystem.getInstance().joinGame(playerName, "127.0.0.1", 1234);
-                    servermess = ClientSystem.getInstance().handleMessage(servermess);
+                // try {
+                    // String servermess = ClientSystem.getInstance().joinGame(playerName, "127.0.0.1", 1234);
+                    // servermess = ClientSystem.getInstance().handleMessage(servermess);
+                    String servermess = "SUCESS";
                     switch (servermess){
                         case "FAIL":
                             this.notification("ROOM IS FULL", "FAIL");
@@ -69,10 +70,10 @@ public class MainMenuPanel extends JLabel implements ActionListener {
                             new PlayingRoomFrame();
                             break;
                     }
-                } catch (ClassNotFoundException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+                // } catch (ClassNotFoundException e1) {
+                //     // TODO Auto-generated catch block
+                //     e1.printStackTrace();
+                // }
             }
             else {
                 this.notification("The nickname is composed by the following characters ‘a’...’z’, ‘A’...’Z’, ‘0’...’9’, ‘_’ \n" +

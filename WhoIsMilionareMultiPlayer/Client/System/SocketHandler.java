@@ -26,13 +26,20 @@ public class SocketHandler {
         }
     }
 
-    public String sendMessage(String msg){
+    public void sendMessage(String msg){
         try {
-        if (msg != "") out.writeObject(msg);
-        String listen = (String) in.readObject();
-        return listen;
+            if (msg != "") out.writeObject(msg);
         }
         catch (Exception ex){
+        }
+    }
+
+    public String waitForServer(){
+        try{
+            String listen = (String) in.readObject();
+            return listen;
+        }
+        catch(Exception ex){
             return "";
         }
     }

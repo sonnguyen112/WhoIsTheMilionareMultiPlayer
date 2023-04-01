@@ -32,7 +32,7 @@ public class ClientSystem {
     }
 
     public void sendToServer(int answer){
-        String respond = SocketHandler.getInstance().sendMessage(renderMess(SEND_ANWSER, answer));
+        SocketHandler.getInstance().sendMessage(renderMess(SEND_ANWSER, answer));
     }
 
     public void showQuestion(Question ques){
@@ -63,8 +63,9 @@ public class ClientSystem {
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
         this.initPlayer(playername);
         SocketHandler.getInstance().startConnection(ipaddr, port);
-        String mess = SocketHandler.getInstance().sendMessage("{\"event\": \"join_room\", \"name\":"+ playername + "}");
-        return mess;
+        SocketHandler.getInstance().sendMessage("{\"event\": \"join_room\", \"name\":"+ playername + "}");
+        String returnmess = SocketHandler.getInstance().waitForServer();
+        return returnmess;
     }
 
     public String handleMessage(String servermess) {
