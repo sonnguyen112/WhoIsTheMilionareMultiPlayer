@@ -1,10 +1,7 @@
 package Client.System;
 
-import java.io.IOException;
-
 import Client.Player.Player;
 import Client.Player.PlayerList;
-import Server.System.ServerSystem;
 
 public class ClientSystem {
     private ClientSystem(){}
@@ -48,6 +45,7 @@ public class ClientSystem {
         //GET CURRENT QUESTION FROM SERVER, IF QUESTION IS NULL, JUST RETURN NULL, THE UPDATE
         //FUNCTION FROM SERVER WILL UPDATE RESULT TO PLAYERS
 
+
         return null;
     }
 
@@ -59,7 +57,7 @@ public class ClientSystem {
         return false; //RETURN FALSE IF GAME IS NOT OVER, TRUE IF GAME IS OVER
     }
 
-    public String joinGame(String playername, String ipaddr, int port) throws ClassNotFoundException{
+    public String joinGame(String playername, String ipaddr, int port){
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
         this.initPlayer(playername);
         SocketHandler.getInstance().startConnection(ipaddr, port);

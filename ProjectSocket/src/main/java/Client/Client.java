@@ -11,7 +11,7 @@ public class Client {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new MainMenuFrame();        
+                MainMenuFrame.getInstance().setVisible(true);;        
             }
         });
       
