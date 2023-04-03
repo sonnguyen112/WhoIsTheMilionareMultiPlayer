@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class WaitingRoomPanel extends JLabel{
     ImageIcon image;
-    JLabel[] name = new JLabel[4];
+    public JLabel[] name = new JLabel[4];
     public JLabel labelOclock;
 
     public WaitingRoomPanel(){
