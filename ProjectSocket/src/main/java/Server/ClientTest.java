@@ -12,6 +12,8 @@ public class ClientTest {
         SocketChannel socketChannel = SocketChannel.open();
         socketChannel.connect(new InetSocketAddress("localhost", 8089));
 
+        System.out.println(socketChannel.getRemoteAddress());
+
         Scanner scanner = new Scanner(System.in);
 
         Thread sender = new Thread(new Runnable() {
