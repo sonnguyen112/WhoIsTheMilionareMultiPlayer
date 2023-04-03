@@ -1,6 +1,7 @@
 package Server;/*package whatever //do not write package name here */
-import Server.Request.CommonRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import netscape.javascript.JSObject;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,9 +11,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class ServerMain {
     private static Selector selector = null;
@@ -20,6 +19,7 @@ public class ServerMain {
     private static ByteBuffer bufferRead = ByteBuffer.allocate(1024);
     private static ByteBuffer bufferWrite = ByteBuffer.allocate(1024);
     private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ArrayList<String> namePlayers = new ArrayList<>();
 
     public static void main(String[] args)
     {
@@ -109,10 +109,29 @@ public class ServerMain {
         bufferRead.clear();
     }
 
-    private static void processData(String data) throws IOException {
-        CommonRequest commonRequest = objectMapper.readValue(data, CommonRequest.class);
-        if (commonRequest.getEvent().equals("join_room")){
+    private static void sendData(String data, SocketChannel client) throws IOException {
+        bufferWrite.put(data.getBytes());
+        bufferWrite.flip();
+        client.write(bufferWrite);
+        bufferWrite.clear();
+    }
 
+    private static void processData(String data) throws IOException {
+        HashMap<String, Object> jsonData = objectMapper.readValue(data, HashMap.class);
+        if (jsonData.get("event").equals("joinRoom")){
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("event", "joinRoom");
+            if (namePlayers.contains((String) jsonData.get("name"))){
+                response.put("status", "FAIL");
+            }
+            else {
+                namePlayers.add((String) jsonData.get("name"));
+            }
+            response.put("status", "OK");
+            String jsonResponse = objectMapper.writeValueAsString(response);
+            for (int i =0; i < clients.size(); i++){
+                sendData(jsonResponse, clients.get(i));
+            }
         }
         if (data.equalsIgnoreCase(
                 "quit")) {

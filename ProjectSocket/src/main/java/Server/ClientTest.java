@@ -12,7 +12,7 @@ public class ClientTest {
         SocketChannel socketChannel = SocketChannel.open();
         socketChannel.connect(new InetSocketAddress("localhost", 8089));
 
-        System.out.println(socketChannel.getRemoteAddress());
+        System.out.println(socketChannel.getLocalAddress());
 
         Scanner scanner = new Scanner(System.in);
 
