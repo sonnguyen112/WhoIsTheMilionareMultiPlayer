@@ -10,6 +10,8 @@ public class ClientSystem {
         return sys;
     }
 
+    public String state = "join game";
+
     public void initPlayer(String name){
         Player you = new Player(name);
         PlayerList.getInstance().add(you);

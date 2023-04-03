@@ -16,7 +16,6 @@ public class MessageHandler {
     static final String UPDATE = "update";
     static final String GET_QUESTION = "getQuestion";
     static final String END_GAME = "3";
-    static final String UPDATE_INFO = "4";
 
     public static String handle(String mess){
         try {
@@ -26,7 +25,7 @@ public class MessageHandler {
                     MainMenuFrame.getInstance().menupanel.notification((String) map.get("mess"), "SERVER");
                 break;
                 case UPDATE:
-                    if (map.get("status") == "sucess"){
+                    if (map.get("status") == "sucess" && ClientSystem.getInstance().state == "join game"){
                         WinnerFrame.getInstance().setVisible(false);
                         WaitingRoomFrame.getInstance().setVisible(true);
                         MainMenuFrame.getInstance().setVisible(false);
@@ -45,9 +44,6 @@ public class MessageHandler {
                     break;
                 case END_GAME:
 
-                    break;
-                case UPDATE_INFO:
-                    //update player score
                     break;
             }
 
