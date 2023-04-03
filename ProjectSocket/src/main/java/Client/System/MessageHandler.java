@@ -5,43 +5,46 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Client.MainMenu.MainMenuFrame;
+import Client.Player.Player;
+import Client.Player.PlayerList;
 import Client.PlayingRoom.PlayingRoomFrame;
+import Client.WaitingRoom.WaitingRoomFrame;
+import Client.Winner.WinnerFrame;
 
 public class MessageHandler {
-    static final String JOINING_ROOM = "1";
-    static final String GET_QUESTION = "2";
+    static final String JOINING_ROOM = "joinRoom";
+    static final String UPDATE = "update";
+    static final String GET_QUESTION = "getQuestion";
     static final String END_GAME = "3";
     static final String UPDATE_INFO = "4";
 
     public static String handle(String mess){
         try {
-            Map<String, String> map = jsonToMap(mess);
-            switch (map.get("event")){
+            Map<String, Object> map = jsonToMap(mess);
+            switch ((String) map.get("event")){
                 case JOINING_ROOM:
-                //if sucess
-                if (map.get("sucess") == "OK"){
-                    MainMenuFrame.getInstance().setVisible(false);
-                    PlayingRoomFrame.getInstance().setVisible(true);
-                }
-                else {
-                    MainMenuFrame.getInstance().menupanel.notification("CANNOT JOIN THE GAME", "FAIL TO JOIN GAME");
-                }
+                    MainMenuFrame.getInstance().menupanel.notification((String) map.get("mess"), "SERVER");
+                break;
+                case UPDATE:
+                    if (map.get("status") == "sucess"){
+                        WinnerFrame.getInstance().setVisible(false);
+                        WaitingRoomFrame.getInstance().setVisible(true);
+                        MainMenuFrame.getInstance().setVisible(false);
+                        PlayingRoomFrame.getInstance().setVisible(false);
+
+                        PlayerList.getInstance().set((Player[]) map.get("mess"));
+                    }
                 break;
                 case GET_QUESTION:
-                    String currentQues = map.get("ques");
-                    String anws0 = map.get("answer0");
-                    String anws1 = map.get("answer1");
-                    String anws2 = map.get("answer2");
-                    String anws3 = map.get("answer3");
+                    String currentQues = (String) map.get("ques");
+                    String[] anws = (String[]) map.get("answer");
 
                     PlayingRoomFrame.getInstance().playpanel.questionLabel.setText(currentQues);
-                    PlayingRoomFrame.getInstance().playpanel.options[0].setText(anws0);
-                    PlayingRoomFrame.getInstance().playpanel.options[1].setText(anws1);
-                    PlayingRoomFrame.getInstance().playpanel.options[2].setText(anws2);
-                    PlayingRoomFrame.getInstance().playpanel.options[3].setText(anws3);
+                    for (int i = 0; i < 4; i++)
+                        PlayingRoomFrame.getInstance().playpanel.options[i].setText(anws[i]);
                     break;
                 case END_GAME:
-                    
+
                     break;
                 case UPDATE_INFO:
                     //update player score
@@ -55,9 +58,121 @@ public class MessageHandler {
         }
     }
     
-    public static Map<String, String> jsonToMap(String json) throws Exception {
+    public static Map<String, Object> jsonToMap(String json) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> map = mapper.readValue(json, Map.class);
+        Map<String, Object> map = mapper.readValue(json, Map.class);
         return map;
     }
 }
+
+
+/*
+ * join room:
+
+{
+"event":"joinRoom",
+"name":"$playername"
+}
+
+{
+"event":"joinRoom",
+"status":"fail",
+"mess":"name exist/full"
+}
+
+{
+"event":"update",
+"status":"sucess",
+"mess":[name1, name2, name3, name4]
+}
+
+client
+{
+"event":"getQuestion"
+}
+
+server
+{
+"event":"getQuestion",
+"question":"$question",
+"options":[$op1, $op2, $op3, $op4]
+}
+
+client
+{
+"event":"answer",
+"answer":"$index"
+}
+
+server
+{
+"event":"answer",
+"corr":"$bool",
+"iwin":"$bool",
+"mess":[name1, name2, name3, name4]
+}
+
+
+
+
+
+
+
+
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.util.Scanner;
+
+public class Client {
+    public static void main(String[] args) throws IOException {
+        SocketChannel socketChannel = SocketChannel.open();
+        socketChannel.connect(new InetSocketAddress("localhost", 8089));
+
+        Scanner scanner = new Scanner(System.in);
+
+        Thread sender = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    while (true) {
+                        String message = scanner.nextLine();
+                        buffer.put(message.getBytes());
+                        buffer.flip();
+                        socketChannel.write(buffer);
+                        buffer.clear();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        );
+
+        Thread receiver = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    while (true) {
+                        socketChannel.read(buffer);
+                        buffer.flip();
+                        String message = new String(buffer.array()).trim();
+                        System.out.println("Received message: " + message);
+                        buffer.clear();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        sender.start();
+        receiver.start();
+    }
+}
+ * 
+ */

@@ -35,7 +35,7 @@ public class ClientSystem {
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
         this.initPlayer(playername);
         SocketHandler.getInstance().startConnection(ipaddr, port);
-        SocketHandler.getInstance().sendMessage("{\"event\": \"join_room\", \"name\":"+ playername + "}");
+        SocketHandler.getInstance().sendMessage("{\"event\": \"joinRoom\", \"name\":"+ playername + "}");
         String returnmess = SocketHandler.getInstance().waitForServer();
         MessageHandler.handle(returnmess);
     }

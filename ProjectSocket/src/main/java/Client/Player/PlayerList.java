@@ -11,6 +11,12 @@ public class PlayerList {
         this.player_num = 0;
     }
 
+    public void set(Player[] out_players){
+        for (int i = 0; i < 4; i++){
+            players[i] = out_players[i];
+        }
+    }
+
     private static final PlayerList playerlist = new PlayerList();
 
     public static PlayerList getInstance() {
