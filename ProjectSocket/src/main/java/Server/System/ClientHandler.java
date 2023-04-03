@@ -1,6 +1,6 @@
 package Server.System;
 
-import Server.Request.VirtualRequest;
+import Server.Server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.DataInputStream;
@@ -22,8 +22,13 @@ public class ClientHandler implements Runnable{
 
     private void eventHandler(VirtualRequest request){
         //HANDLE REQUEST
-        if (request.event.equals("join_room")){
-
+        if (request.getEvent().equals("join_room")){
+            JoinRoomRequest joinRoomRequest = (JoinRoomRequest)request;
+            String playerName = joinRoomRequest.getName();
+            if (Server.playerNames.contains(playerName)){
+                
+            }
+            Server.playerNames.add(joinRoomRequest.getName());
         }
     }
 

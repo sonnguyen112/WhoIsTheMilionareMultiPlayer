@@ -1,0 +1,57 @@
+package Server;
+
+/*package whatever //do not write package name here */
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.util.Scanner;
+
+public class ClientTest {
+    public static void main(String[] args) throws IOException {
+        SocketChannel socketChannel = SocketChannel.open();
+        socketChannel.connect(new InetSocketAddress("localhost", 8089));
+
+        Scanner scanner = new Scanner(System.in);
+
+        Thread sender = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    while (true) {
+                        String message = scanner.nextLine();
+                        buffer.put(message.getBytes());
+                        buffer.flip();
+                        socketChannel.write(buffer);
+                        buffer.clear();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Thread receiver = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    while (true) {
+                        socketChannel.read(buffer);
+                        buffer.flip();
+                        String message = new String(buffer.array()).trim();
+                        System.out.println("Received message: " + message);
+                        buffer.clear();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        sender.start();
+        receiver.start();
+    }
+}
+
