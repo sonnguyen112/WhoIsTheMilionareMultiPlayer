@@ -47,7 +47,7 @@ public class MainMenuPanel extends JLabel implements ActionListener {
 
     }
 
-    private void notification(String mess, String type){
+    public void notification(String mess, String type){
         JOptionPane.showMessageDialog(null, mess, type, JOptionPane.WARNING_MESSAGE);
     }
 

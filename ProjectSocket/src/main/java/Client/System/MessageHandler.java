@@ -15,7 +15,7 @@ public class MessageHandler {
     static final String JOINING_ROOM = "joinRoom";
     static final String UPDATE = "update";
     static final String GET_QUESTION = "getQuestion";
-    static final String END_GAME = "3";
+    static final String ANSWER = "answer";
 
     public static String handle(String mess){
         try {
@@ -25,14 +25,21 @@ public class MessageHandler {
                     MainMenuFrame.getInstance().menupanel.notification((String) map.get("mess"), "SERVER");
                 break;
                 case UPDATE:
+
                     if (map.get("status") == "sucess" && ClientSystem.getInstance().state == "join game"){
                         WinnerFrame.getInstance().setVisible(false);
                         WaitingRoomFrame.getInstance().setVisible(true);
                         MainMenuFrame.getInstance().setVisible(false);
                         PlayingRoomFrame.getInstance().setVisible(false);
-
-                        PlayerList.getInstance().set((Player[]) map.get("mess"));
+                        ClientSystem.getInstance().state = "waiting";
                     }
+                    
+                    PlayerList.getInstance().set((Player[]) map.get("mess"));
+                    if (ClientSystem.getInstance().state == "waiting" && PlayerList.getInstance().player_num == 4){
+                        ClientSystem.getInstance().countDownToGame();
+                    }
+
+                    ClientSystem.getInstance().updatePlayers();
                 break;
                 case GET_QUESTION:
                     String currentQues = (String) map.get("ques");
@@ -42,9 +49,29 @@ public class MessageHandler {
                     for (int i = 0; i < 4; i++)
                         PlayingRoomFrame.getInstance().playpanel.options[i].setText(anws[i]);
                     break;
-                case END_GAME:
+                case ANSWER:
+                    Boolean iwin = (Boolean) map.get("iwin");
+                    Boolean corr = (Boolean) map.get("corr");
 
-                    break;
+                    PlayerList.getInstance().set((Player[]) map.get("mess"));
+                    ClientSystem.getInstance().updatePlayers();
+
+                    if (iwin){
+                        WinnerFrame.getInstance().setVisible(true);
+                        WaitingRoomFrame.getInstance().setVisible(false);
+                        MainMenuFrame.getInstance().setVisible(false);
+                        PlayingRoomFrame.getInstance().setVisible(false);
+                        ClientSystem.getInstance().state = "join game";
+                        SocketHandler.getInstance().stopConnection();
+                    }
+                    else if (!corr){
+                        WinnerFrame.getInstance().setVisible(false);
+                        WaitingRoomFrame.getInstance().setVisible(true);
+                        MainMenuFrame.getInstance().setVisible(false);
+                        PlayingRoomFrame.getInstance().setVisible(false);
+                        ClientSystem.getInstance().state = "join game";
+                        SocketHandler.getInstance().stopConnection();
+                    }
             }
 
             return "";

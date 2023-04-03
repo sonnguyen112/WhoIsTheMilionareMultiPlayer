@@ -1,10 +1,17 @@
 package Client.Winner;
 import Client.Common.Common;
+import Client.MainMenu.MainMenuFrame;
+import Client.PlayingRoom.PlayingRoomFrame;
+import Client.WaitingRoom.WaitingRoomFrame;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JLabel;
 
-public class WinnerPanel extends JLabel {
+public class WinnerPanel extends JLabel implements ActionListener{
     ImageIcon image;
     ImageIcon ImageIcon;
     JButton ReplayButton;
@@ -21,4 +28,14 @@ public class WinnerPanel extends JLabel {
         ReplayButton.setBorderPainted(true);
         this.add(ReplayButton);
     }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == ReplayButton){
+            WinnerFrame.getInstance().setVisible(false);
+            MainMenuFrame.getInstance().setVisible(true);
+        }
+    }
+
+
 }

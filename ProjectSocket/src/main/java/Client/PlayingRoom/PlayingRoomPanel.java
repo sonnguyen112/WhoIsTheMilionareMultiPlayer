@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
 public class PlayingRoomPanel extends JLabel implements ActionListener{
 
     public JButton options[] = new JButton[4];
-    JLabel player_name[] = new JLabel[4];
+    public JLabel player_name[] = new JLabel[4];
     public JLabel questionLabel;
     JLabel clock;
     ImageIcon image;

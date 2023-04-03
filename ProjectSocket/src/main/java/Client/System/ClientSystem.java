@@ -1,9 +1,15 @@
 package Client.System;
 
+import java.util.concurrent.TimeUnit;
+
 import Client.Player.Player;
 import Client.Player.PlayerList;
+import Client.PlayingRoom.PlayingRoomFrame;
+import Client.WaitingRoom.WaitingRoomFrame;
 
 public class ClientSystem {
+    public int gameCountDown = 3;
+
     private ClientSystem(){}
     private static final ClientSystem sys = new ClientSystem();
     public static ClientSystem getInstance(){
@@ -17,14 +23,41 @@ public class ClientSystem {
         PlayerList.getInstance().add(you);
     }
 
+    public void countDownToGame(){
+        try {
+            for (int i = 0; i < this.gameCountDown; i++){
+                TimeUnit.SECONDS.sleep(1);
+                WaitingRoomFrame.getInstance().waitingRoom.labelOclock.setText("GAME IN " + (3-i));
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updatePlayers(){
+        if (state == "playing"){
+            for (int i = 0; i < 4; i++)
+                PlayingRoomFrame.getInstance().playpanel.player_name[i].setText(PlayerList.getInstance().getPlayer(i).name);
+        }
+        else if (state == "waiting"){
+            for (int i = 0; i < 4; i++)
+                WaitingRoomFrame.getInstance().waitingRoom.name[i].setText(PlayerList.getInstance().getPlayer(i).name);
+        }
+    }
+
     public void sendAnswerToServer(int answer){
-        //change answer to json message
-        String jsonmess = "{\"event\":\"2\"}";
+        // send client answer to server
+        String jsonmess = "{\"event\":\"answer\",\"answer\":\"" + answer + "\"}";
 
         SocketHandler.getInstance().sendMessage(jsonmess);
         String result = SocketHandler.getInstance().waitForServer();
         MessageHandler.handle(result);
 
+        // tell server that client is ready for next question
+        String ready = "{\"event\":\"getQuestion\"}";
+        SocketHandler.getInstance().sendMessage(ready);
+
+        // this message is suppose to be a new question from server
         receiveFromServer();
     }
 
