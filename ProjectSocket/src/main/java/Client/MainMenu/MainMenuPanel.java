@@ -56,19 +56,7 @@ public class MainMenuPanel extends JLabel implements ActionListener {
         if (e.getSource() == button){
             String playerName = textField.getText();
             if (Vadiation.checkNickName(playerName)){
-                System.out.println("OK");
-                    String servermess = ClientSystem.getInstance().joinGame(playerName, "127.0.0.1", 1234);
-                    servermess = ClientSystem.getInstance().handleMessage(servermess);
-                    // String servermess = "SUCESS";
-                    switch (servermess){
-                        case "FAIL":
-                            this.notification("ROOM IS FULL", "FAIL");
-                            break;
-                        case "SUCESS":
-                            MainMenuFrame.getInstance().setVisible(false);
-                            PlayingRoomFrame.getInstance().setVisible(true);
-                            break;
-                    }
+                ClientSystem.getInstance().joinGame(playerName, "127.0.0.1", 1234);
             }
             else {
                 this.notification("The nickname is composed by the following characters ‘a’...’z’, ‘A’...’Z’, ‘0’...’9’, ‘_’ \n" +

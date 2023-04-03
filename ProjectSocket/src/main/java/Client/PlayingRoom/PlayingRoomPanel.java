@@ -5,18 +5,20 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import Client.Common.Common;
+import Client.System.ClientSystem;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class PlayingRoomPanel extends JLabel {
+public class PlayingRoomPanel extends JLabel implements ActionListener{
 
-    JButton options[] = new JButton[4];
+    public JButton options[] = new JButton[4];
     JLabel player_name[] = new JLabel[4];
-    JLabel questionLabel;
+    public JLabel questionLabel;
     JLabel clock;
     ImageIcon image;
-    JButton skipButton;
+    public JButton skipButton;
     PlayingRoomPanel(){
         image = new ImageIcon(new ImageIcon("src/main/java/Client/Image/background_2.jpg").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
         ImageIcon skipButtonImg = new ImageIcon(new ImageIcon("src/main/java/Client/Image/skip_button.png").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
@@ -115,6 +117,20 @@ public class PlayingRoomPanel extends JLabel {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+        if (e.getSource() == options[0]){
+            ClientSystem.getInstance().sendAnswerToServer(0);
+        }
+        else if (e.getSource() == options[1]){
+            ClientSystem.getInstance().sendAnswerToServer(1);
+        }
+        else if (e.getSource() == options[2]){
+            ClientSystem.getInstance().sendAnswerToServer(2);
+        }
+        else if (e.getSource() == options[3]){
+            ClientSystem.getInstance().sendAnswerToServer(3);
+        }
+        else if (e.getSource() == skipButton){
+            ClientSystem.getInstance().sendAnswerToServer(-1);
+        }
     }
 }

@@ -17,49 +17,26 @@ public class ClientSystem {
 
     public void sendAnswerToServer(int answer){
         //change answer to json message
+        String jsonmess = "{\"event\":\"2\"}";
 
+        SocketHandler.getInstance().sendMessage(jsonmess);
+        String result = SocketHandler.getInstance().waitForServer();
+        MessageHandler.handle(result);
 
+        receiveFromServer();
+    }
 
-        SocketHandler.getInstance().sendMessage("");
+    public void receiveFromServer(){
         String result = SocketHandler.getInstance().waitForServer();
         MessageHandler.handle(result);
     }
 
-    public void showQuestion(Question ques){
-        // UPDATE QUESTION IN QUESTION INTERFACE
-    }
-
-    public int getAnswerFromPlayer(){
-        // GET ANSWER FROM GAME INTERFACE
-        return 0;
-    }
-
-    public Question receiveFromServer(){
-        //GET CURRENT QUESTION FROM SERVER, IF QUESTION IS NULL, JUST RETURN NULL, THE UPDATE
-        //FUNCTION FROM SERVER WILL UPDATE RESULT TO PLAYERS
-
-
-        return null;
-    }
-
-    public boolean getResultUpdateFromServer(){
-        //IF PLAYER IS WINNER, SHOW WIN INTERFACE
-
-        //ELSE SHOW LOSE INTERFACE
-
-        return false; //RETURN FALSE IF GAME IS NOT OVER, TRUE IF GAME IS OVER
-    }
-
-    public String joinGame(String playername, String ipaddr, int port){
+    public void joinGame(String playername, String ipaddr, int port){
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
         this.initPlayer(playername);
         SocketHandler.getInstance().startConnection(ipaddr, port);
         SocketHandler.getInstance().sendMessage("{\"event\": \"join_room\", \"name\":"+ playername + "}");
         String returnmess = SocketHandler.getInstance().waitForServer();
-        return returnmess;
-    }
-
-    public String handleMessage(String servermess) {
-        return null;
+        MessageHandler.handle(returnmess);
     }
 }
