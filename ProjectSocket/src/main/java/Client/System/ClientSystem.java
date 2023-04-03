@@ -10,26 +10,19 @@ public class ClientSystem {
         return sys;
     }
 
-    public final int CONNECT_TO_SERVER = 0;
-    public final int SEND_ANWSER = 1;
-
     public void initPlayer(String name){
         Player you = new Player(name);
         PlayerList.getInstance().add(you);
     }
 
-    private String renderMess(int type, int aws){
-        switch (type){
-            case CONNECT_TO_SERVER:
-            return "";
-            case SEND_ANWSER:
-            return "";
-        }
-        return "";
-    }
+    public void sendAnswerToServer(int answer){
+        //change answer to json message
 
-    public void sendToServer(int answer){
-        SocketHandler.getInstance().sendMessage(renderMess(SEND_ANWSER, answer));
+
+
+        SocketHandler.getInstance().sendMessage("");
+        String result = SocketHandler.getInstance().waitForServer();
+        MessageHandler.handle(result);
     }
 
     public void showQuestion(Question ques){

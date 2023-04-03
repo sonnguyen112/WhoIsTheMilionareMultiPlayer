@@ -7,6 +7,7 @@ import javax.swing.border.Border;
 import Client.Common.Common;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class PlayingRoomPanel extends JLabel {
 
@@ -110,5 +111,10 @@ public class PlayingRoomPanel extends JLabel {
         this.add(optionPanel);
         this.add(clock);
         this.add(skipButton);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        
     }
 }
