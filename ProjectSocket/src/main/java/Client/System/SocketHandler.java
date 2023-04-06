@@ -1,25 +1,23 @@
 package Client.System;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 
 public class SocketHandler {
-    private Socket clientSocket;
-    ObjectOutputStream out = null;
-    ObjectInputStream in = null;
-    
+    SocketChannel socketChannel;
+    String receive_message;
+
     private SocketHandler(){}
     static private SocketHandler singleton = new SocketHandler();
     static public SocketHandler getInstance(){
         return singleton;
     }
-    
+
     public void startConnection(String ip, int port){
         try {
-            clientSocket = new Socket(ip, port);
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
-            in = new ObjectInputStream(clientSocket.getInputStream());
+            socketChannel = SocketChannel.open();
+            socketChannel.connect(new InetSocketAddress("127.0.0.1", 1234));
         }
         catch (Exception ex){
 
@@ -27,31 +25,55 @@ public class SocketHandler {
     }
 
     public void sendMessage(String msg){
-        try {
-            if (msg != "") out.writeObject(msg);
+        Thread sender = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    while (true) {
+                        buffer.put(msg.getBytes());
+                        buffer.flip();
+                        socketChannel.write(buffer);
+                        buffer.clear();
+                    }
+                } catch (Exception e) {
+
+                }
+            }
         }
-        catch (Exception ex){
-        }
+        );
+
+        sender.start();
     }
 
     public String waitForServer(){
-        try{
-            String listen = (String) in.readObject();
-            return listen;
-        }
-        catch(Exception ex){
-            return "";
-        }
+        Thread receiver = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    while (true) {
+                        socketChannel.read(buffer);
+                        buffer.flip();
+                        String message = new String(buffer.array()).trim();
+                        SocketHandler.getInstance().receive_message = message;
+                        buffer.clear();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        receiver.start();
+        return receive_message;
     }
 
     public void stopConnection(){
         try {
-            in.close();
-            out.close();
-            clientSocket.close();
-        }
-        catch (Exception ex){
-
+            socketChannel.close();
+        } catch (Exception e) {
+            
         }
     }
 }
