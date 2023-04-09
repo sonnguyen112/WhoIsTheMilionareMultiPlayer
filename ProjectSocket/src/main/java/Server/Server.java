@@ -1,8 +1,6 @@
 package Server;/*package whatever //do not write package name here */
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import netscape.javascript.JSObject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,29 +15,31 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
-import org.w3c.dom.events.Event;
+public class Server {
+    private final int NUM_PLAYER = 4;
+    private Selector selector = null;
+    private ArrayList<SocketChannel> clients = new ArrayList<>();
+    private ByteBuffer bufferRead = ByteBuffer.allocate(1024);
+    private ByteBuffer bufferWrite = ByteBuffer.allocate(1024);
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private ArrayList<String> namePlayers = new ArrayList<>();
+    private ArrayList<String> questionList = new ArrayList<>();
+    private ArrayList<Integer> questionListId = new ArrayList<>();
+    Statement stmt = null;
+    Connection con = null;
 
-public class ServerMain {
-    private static Selector selector = null;
-    private static ArrayList<SocketChannel> clients = new ArrayList<>();
-    private static ByteBuffer bufferRead = ByteBuffer.allocate(1024);
-    private static ByteBuffer bufferWrite = ByteBuffer.allocate(1024);
-    private static ObjectMapper objectMapper = new ObjectMapper();
-    private static ArrayList<String> namePlayers = new ArrayList<>();
-    private static int turn = 1;
-        
-    public static void main(String[] args) throws ClassNotFoundException,SQLException
-    {
+    public Server() throws ClassNotFoundException, SQLException{
         Class.forName("com.mysql.jdbc.Driver");  
-        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
+        con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
         //here sonoo is database name, root is username and password  
-        Statement stmt= con.createStatement();  
-        ResultSet rs=stmt.executeQuery("select * from questions where ID ="+turn);  
-        if(rs.next())  
-        System.out.println(rs.getInt(1)+"  "+rs.getString(2)+"  "+rs.getInt(3));  
-        // con.close();  
+        stmt= con.createStatement();  
+    }
+    public void run() throws ClassNotFoundException, SQLException {
         try {
             selector = Selector.open();
             // We have to set connection host,port and
@@ -66,8 +66,7 @@ public class ServerMain {
                         // New client has been accepted
                         handleAccept(serverSocketChannel,
                                 key);
-                    }
-                    else if (key.isReadable()) {
+                    } else if (key.isReadable()) {
                         // We can run non-blocking operation
                         // READ on our client
                         handleRead(key);
@@ -75,15 +74,13 @@ public class ServerMain {
                     i.remove();
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void handleAccept(ServerSocketChannel mySocket,
-                                     SelectionKey key) throws IOException
-    {
+    private void handleAccept(ServerSocketChannel mySocket,
+                              SelectionKey key) throws IOException {
 
         System.out.println("Connection Accepted..");
 
@@ -97,95 +94,95 @@ public class ServerMain {
         System.out.println(clients);
     }
 
-    private static void handleRead(SelectionKey key)
-            throws IOException, ClassNotFoundException, SQLException
-    {
+    private void handleRead(SelectionKey key)
+            throws IOException, ClassNotFoundException, SQLException {
         System.out.println("Reading client's message.");
 
         // create a ServerSocketChannel to read the request
-        SocketChannel client = (SocketChannel)key.channel();
+        SocketChannel client = (SocketChannel) key.channel();
 
         client.read(bufferRead);
         bufferRead.flip();
-        bufferWrite.put("KKK".getBytes());
-        bufferWrite.flip();
-        for (int i = 0; i < clients.size(); i++){
-            System.out.println(clients.get(i));
-            clients.get(i).write(bufferWrite);
-            bufferWrite.flip();
-        }
 
         // Parse data from buffer to String
         String data = new String(bufferRead.array()).trim();
         if (data.length() > 0) {
             System.out.println("Received message: " + data);
-            processData(data);
+            processData(data, client);
         }
         bufferWrite.clear();
         bufferRead.clear();
     }
 
-    private static String getQuestionAction() throws ClassNotFoundException, SQLException{
+    private void sendData(String data, SocketChannel client) throws IOException {
+        bufferWrite.limit(1024);
+        bufferWrite.put(data.getBytes());
+        bufferWrite.flip();
+        client.write(bufferWrite);
+        bufferWrite.clear();
+    }
+    
+    private  String getQuestionAction() throws ClassNotFoundException, SQLException{
         String question = ""; 
-        Class.forName("com.mysql.jdbc.Driver");  
-        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
-        //here sonoo is database name, root is username and password  
-        Statement stmt= con.createStatement();  
-        ResultSet rs=stmt.executeQuery("select * from questions where ID ="+turn);  
+        int questionId = 0;
+        ResultSet rs=stmt.executeQuery("select * from questions");  
         while(rs.next())  
         {
             question = rs.getString(2);
-            System.out.println(rs.getInt(1)+"  "+question+"  "+rs.getInt(3));
+            questionId = rs.getInt(1); 
+            System.out.println(questionId+"  "+question+"  "+rs.getInt(3));
+            questionList.add(question);
+            questionListId.add(questionId);
         }  
+        String result = questionList.remove(0);
         
-        con.close();  
-        
-        return question;
+        return result;
         
     }
 
-    private static ArrayList<String> getListOptions() throws ClassNotFoundException, SQLException{
+    private  ArrayList<String> getListOptions() throws ClassNotFoundException, SQLException{
         ArrayList<String> ListOptions = new ArrayList<>();
         String option = "";
-        Class.forName("com.mysql.jdbc.Driver");  
-        System.out.println("hello Son");
-        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
-        //here sonoo is database name, root is username and password  
-        Statement stmt= con.createStatement();  
-        ResultSet rs=stmt.executeQuery("select * from options where questionId="+turn);  
+        ResultSet rs=stmt.executeQuery("select * from options WHERE QuestionID="+questionListId.remove(0));  
         while(rs.next())  
         {
             option = rs.getString(2);
             ListOptions.add(rs.getString(2));
             System.out.println(rs.getInt(1)+"  "+option+"  "+rs.getInt(3));
         }  
-        
-        con.close();  
         return ListOptions;
     }
 
-    private static void sendData(String data, SocketChannel client) throws IOException {
-        bufferWrite.put(data.getBytes());
-        bufferWrite.flip();
-        client.write(bufferWrite);
-        bufferWrite.clear();
-    }
-
-    private static void processData(String data) throws IOException, ClassNotFoundException, SQLException {
+    private void processData(String data, SocketChannel client) throws IOException, ClassNotFoundException, SQLException {
         HashMap<String, Object> jsonData = objectMapper.readValue(data, HashMap.class);
-        if (jsonData.get("event").equals("joinRoom")){
+        if (jsonData.get("event").equals("joinRoom")) {
             HashMap<String, Object> response = new HashMap<>();
-            response.put("event", "joinRoom");
-            if (namePlayers.contains((String) jsonData.get("name"))){
+            if (namePlayers.contains((String) jsonData.get("name"))) {
+                response.put("event", "joinRoom");
                 response.put("status", "FAIL");
-            }
-            else {
+                response.put("mess", "name exist");
+                String jsonResponse = objectMapper.writeValueAsString(response);
+                sendData(jsonResponse, client);
+                return;
+            } else if (namePlayers.size() >= NUM_PLAYER) {
+                response.put("event", "joinRoom");
+                response.put("status", "FAIL");
+                response.put("mess", "name full");
+                String jsonResponse = objectMapper.writeValueAsString(response);
+                sendData(jsonResponse, client);
+                return;
+            } else {
                 namePlayers.add((String) jsonData.get("name"));
-            }
-            response.put("status", "OK");
-            String jsonResponse = objectMapper.writeValueAsString(response);
-            for (int i =0; i < clients.size(); i++){
-                sendData(jsonResponse, clients.get(i));
+                response.put("event", "update");
+                response.put("status", "success");
+                response.put("mess", namePlayers);
+                System.out.println("Response: " + response);
+                String jsonResponse = objectMapper.writeValueAsString(response);
+                for (int i = 0; i < clients.size(); i++) {
+                    sendData(jsonResponse, clients.get(i));
+                }
+                System.out.println("List Name: " + namePlayers);
+                return;
             }
         }
         if (jsonData.get("event").equals("getQuestion")){
@@ -196,13 +193,11 @@ public class ServerMain {
             ArrayList<String> ListOptions = getListOptions();
             response.put("options", ListOptions);
             String jsonResponse = objectMapper.writeValueAsString(response);
-            for (int i =0; i < clients.size(); i++){
-                sendData(jsonResponse, clients.get(i));
-            }
+            sendData(jsonResponse, client);
         }
         if (data.equalsIgnoreCase(
                 "quit")) {
-            for (int i = 0; i < clients.size(); i++){
+            for (int i = 0; i < clients.size(); i++) {
                 clients.get(i).close();
             }
             System.out.println("Connection closed...");
