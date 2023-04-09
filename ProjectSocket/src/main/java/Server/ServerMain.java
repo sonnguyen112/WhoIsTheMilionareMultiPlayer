@@ -1,6 +1,8 @@
 package Server;/*package whatever //do not write package name here */
-import Server.Request.CommonRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import netscape.javascript.JSObject;
+
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,11 +12,12 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
 
 import org.w3c.dom.events.Event;
 
@@ -24,10 +27,19 @@ public class ServerMain {
     private static ByteBuffer bufferRead = ByteBuffer.allocate(1024);
     private static ByteBuffer bufferWrite = ByteBuffer.allocate(1024);
     private static ObjectMapper objectMapper = new ObjectMapper();
-
-    public static void main(String[] args)
+    private static ArrayList<String> namePlayers = new ArrayList<>();
+    private static int turn = 1;
+        
+    public static void main(String[] args) throws ClassNotFoundException,SQLException
     {
-
+        Class.forName("com.mysql.jdbc.Driver");  
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
+        //here sonoo is database name, root is username and password  
+        Statement stmt= con.createStatement();  
+        ResultSet rs=stmt.executeQuery("select * from questions where ID ="+turn);  
+        if(rs.next())  
+        System.out.println(rs.getInt(1)+"  "+rs.getString(2)+"  "+rs.getInt(3));  
+        // con.close();  
         try {
             selector = Selector.open();
             // We have to set connection host,port and
@@ -86,7 +98,7 @@ public class ServerMain {
     }
 
     private static void handleRead(SelectionKey key)
-            throws IOException
+            throws IOException, ClassNotFoundException, SQLException
     {
         System.out.println("Reading client's message.");
 
@@ -113,14 +125,80 @@ public class ServerMain {
         bufferRead.clear();
     }
 
-    private static void processData(String data) throws IOException {
-        // CommonRequest commonRequest = objectMapper.readValue(data, CommonRequest.class);
-        HashMap<String,Object> jsonData = objectMapper.readValue(data, HashMap.class);
-        // if (commonRequest.getEvent().equals("join_room")){
-                
-        // }
+    private static String getQuestionAction() throws ClassNotFoundException, SQLException{
+        String question = ""; 
+        Class.forName("com.mysql.jdbc.Driver");  
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
+        //here sonoo is database name, root is username and password  
+        Statement stmt= con.createStatement();  
+        ResultSet rs=stmt.executeQuery("select * from questions where ID ="+turn);  
+        while(rs.next())  
+        {
+            question = rs.getString(2);
+            System.out.println(rs.getInt(1)+"  "+question+"  "+rs.getInt(3));
+        }  
+        
+        con.close();  
+        
+        return question;
+        
+    }
+
+    private static ArrayList<String> getListOptions() throws ClassNotFoundException, SQLException{
+        ArrayList<String> ListOptions = new ArrayList<>();
+        String option = "";
+        Class.forName("com.mysql.jdbc.Driver");  
+        System.out.println("hello Son");
+        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
+        //here sonoo is database name, root is username and password  
+        Statement stmt= con.createStatement();  
+        ResultSet rs=stmt.executeQuery("select * from options where questionId="+turn);  
+        while(rs.next())  
+        {
+            option = rs.getString(2);
+            ListOptions.add(rs.getString(2));
+            System.out.println(rs.getInt(1)+"  "+option+"  "+rs.getInt(3));
+        }  
+        
+        con.close();  
+        return ListOptions;
+    }
+
+    private static void sendData(String data, SocketChannel client) throws IOException {
+        bufferWrite.put(data.getBytes());
+        bufferWrite.flip();
+        client.write(bufferWrite);
+        bufferWrite.clear();
+    }
+
+    private static void processData(String data) throws IOException, ClassNotFoundException, SQLException {
+        HashMap<String, Object> jsonData = objectMapper.readValue(data, HashMap.class);
+        if (jsonData.get("event").equals("joinRoom")){
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("event", "joinRoom");
+            if (namePlayers.contains((String) jsonData.get("name"))){
+                response.put("status", "FAIL");
+            }
+            else {
+                namePlayers.add((String) jsonData.get("name"));
+            }
+            response.put("status", "OK");
+            String jsonResponse = objectMapper.writeValueAsString(response);
+            for (int i =0; i < clients.size(); i++){
+                sendData(jsonResponse, clients.get(i));
+            }
+        }
         if (jsonData.get("event").equals("getQuestion")){
-            
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("event","getQuestion");
+            String question = getQuestionAction();
+            response.put("question", question);
+            ArrayList<String> ListOptions = getListOptions();
+            response.put("options", ListOptions);
+            String jsonResponse = objectMapper.writeValueAsString(response);
+            for (int i =0; i < clients.size(); i++){
+                sendData(jsonResponse, clients.get(i));
+            }
         }
         if (data.equalsIgnoreCase(
                 "quit")) {
