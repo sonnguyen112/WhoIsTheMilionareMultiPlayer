@@ -56,7 +56,7 @@ public class MainMenuPanel extends JLabel implements ActionListener {
         if (e.getSource() == button){
             String playerName = textField.getText();
             if (Vadiation.checkNickName(playerName)){
-                ClientSystem.getInstance().joinGame(playerName, "127.0.0.1", 1234);
+                ClientSystem.getInstance().joinGame(playerName, "localhost", 8089);
             }
             else {
                 this.notification("The nickname is composed by the following characters ‘a’...’z’, ‘A’...’Z’, ‘0’...’9’, ‘_’ \n" +

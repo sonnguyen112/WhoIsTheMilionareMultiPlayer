@@ -2,6 +2,8 @@ package Client.System;
 
 import java.util.Map;
 
+import javax.sound.midi.SysexMessage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Client.MainMenu.MainMenuFrame;
@@ -25,8 +27,7 @@ public class MessageHandler {
                     MainMenuFrame.getInstance().menupanel.notification((String) map.get("mess"), "SERVER");
                 break;
                 case UPDATE:
-
-                    if (map.get("status") == "sucess" && ClientSystem.getInstance().state == "join game"){
+                    if (((String) map.get("status")).equals("success") && ClientSystem.getInstance().state == "join game"){
                         WinnerFrame.getInstance().setVisible(false);
                         WaitingRoomFrame.getInstance().setVisible(true);
                         MainMenuFrame.getInstance().setVisible(false);

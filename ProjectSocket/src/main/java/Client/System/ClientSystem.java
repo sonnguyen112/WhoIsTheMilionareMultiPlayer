@@ -70,8 +70,11 @@ public class ClientSystem {
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
         this.initPlayer(playername);
         SocketHandler.getInstance().startConnection(ipaddr, port);
-        SocketHandler.getInstance().sendMessage("{\"event\": \"joinRoom\", \"name\":"+ playername + "}");
+        SocketHandler.getInstance().sendMessage("{\"event\": \"joinRoom\", \"name\":\""+ playername + "\"}");
+        System.out.println("TIME>>>>>>>>>>>>>");
         String returnmess = SocketHandler.getInstance().waitForServer();
+        
+        System.out.println(returnmess);
         MessageHandler.handle(returnmess);
     }
 }
