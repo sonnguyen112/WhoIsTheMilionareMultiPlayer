@@ -1,7 +1,6 @@
 package Server;/*package whatever //do not write package name here */
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import netscape.javascript.JSObject;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,19 +10,21 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
-public class ServerMain {
-    private static Selector selector = null;
-    private static ArrayList<SocketChannel> clients = new ArrayList<>();
-    private static ByteBuffer bufferRead = ByteBuffer.allocate(1024);
-    private static ByteBuffer bufferWrite = ByteBuffer.allocate(1024);
-    private static ObjectMapper objectMapper = new ObjectMapper();
-    private static ArrayList<String> namePlayers = new ArrayList<>();
+public class Server {
+    private final int NUM_PLAYER = 4;
+    private Selector selector = null;
+    private ArrayList<SocketChannel> clients = new ArrayList<>();
+    private ByteBuffer bufferRead = ByteBuffer.allocate(1024);
+    private ByteBuffer bufferWrite = ByteBuffer.allocate(1024);
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private ArrayList<String> namePlayers = new ArrayList<>();
 
-    public static void main(String[] args)
-    {
-
+    public void run() {
         try {
             selector = Selector.open();
             // We have to set connection host,port and
@@ -50,8 +51,7 @@ public class ServerMain {
                         // New client has been accepted
                         handleAccept(serverSocketChannel,
                                 key);
-                    }
-                    else if (key.isReadable()) {
+                    } else if (key.isReadable()) {
                         // We can run non-blocking operation
                         // READ on our client
                         handleRead(key);
@@ -59,15 +59,13 @@ public class ServerMain {
                     i.remove();
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void handleAccept(ServerSocketChannel mySocket,
-                                     SelectionKey key) throws IOException
-    {
+    private void handleAccept(ServerSocketChannel mySocket,
+                              SelectionKey key) throws IOException {
 
         System.out.println("Connection Accepted..");
 
@@ -81,61 +79,69 @@ public class ServerMain {
         System.out.println(clients);
     }
 
-    private static void handleRead(SelectionKey key)
-            throws IOException
-    {
+    private void handleRead(SelectionKey key)
+            throws IOException {
         System.out.println("Reading client's message.");
 
         // create a ServerSocketChannel to read the request
-        SocketChannel client = (SocketChannel)key.channel();
+        SocketChannel client = (SocketChannel) key.channel();
 
         client.read(bufferRead);
         bufferRead.flip();
-        bufferWrite.put("KKK".getBytes());
-        bufferWrite.flip();
-        for (int i = 0; i < clients.size(); i++){
-            System.out.println(clients.get(i));
-            clients.get(i).write(bufferWrite);
-            bufferWrite.flip();
-        }
 
         // Parse data from buffer to String
         String data = new String(bufferRead.array()).trim();
         if (data.length() > 0) {
             System.out.println("Received message: " + data);
-            processData(data);
+            processData(data, client);
         }
         bufferWrite.clear();
         bufferRead.clear();
     }
 
-    private static void sendData(String data, SocketChannel client) throws IOException {
+    private void sendData(String data, SocketChannel client) throws IOException {
+        bufferWrite.limit(1024);
         bufferWrite.put(data.getBytes());
         bufferWrite.flip();
         client.write(bufferWrite);
         bufferWrite.clear();
     }
 
-    private static void processData(String data) throws IOException {
+    private void processData(String data, SocketChannel client) throws IOException {
         HashMap<String, Object> jsonData = objectMapper.readValue(data, HashMap.class);
-        if (jsonData.get("event").equals("joinRoom")){
+        if (jsonData.get("event").equals("joinRoom")) {
             HashMap<String, Object> response = new HashMap<>();
-            response.put("event", "joinRoom");
-            if (namePlayers.contains((String) jsonData.get("name"))){
+            if (namePlayers.contains((String) jsonData.get("name"))) {
+                response.put("event", "joinRoom");
                 response.put("status", "FAIL");
-            }
-            else {
+                response.put("mess", "name exist");
+                String jsonResponse = objectMapper.writeValueAsString(response);
+                sendData(jsonResponse, client);
+                return;
+            } else if (namePlayers.size() >= NUM_PLAYER) {
+                response.put("event", "joinRoom");
+                response.put("status", "FAIL");
+                response.put("mess", "name full");
+                String jsonResponse = objectMapper.writeValueAsString(response);
+                sendData(jsonResponse, client);
+                return;
+            } else {
                 namePlayers.add((String) jsonData.get("name"));
-            }
-            response.put("status", "OK");
-            String jsonResponse = objectMapper.writeValueAsString(response);
-            for (int i =0; i < clients.size(); i++){
-                sendData(jsonResponse, clients.get(i));
+                response.put("event", "update");
+                response.put("status", "success");
+                response.put("mess", namePlayers);
+                System.out.println("Response: " + response);
+                String jsonResponse = objectMapper.writeValueAsString(response);
+                for (int i = 0; i < clients.size(); i++) {
+                    sendData(jsonResponse, clients.get(i));
+                }
+                System.out.println("List Name: " + namePlayers);
+                return;
             }
         }
         if (data.equalsIgnoreCase(
                 "quit")) {
-            for (int i = 0; i < clients.size(); i++){
+            for (int i = 0; i < clients.size(); i++) {
                 clients.get(i).close();
             }
             System.out.println("Connection closed...");

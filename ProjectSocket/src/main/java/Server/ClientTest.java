@@ -1,6 +1,7 @@
 package Server;
 
 /*package whatever //do not write package name here */
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -23,7 +24,17 @@ public class ClientTest {
                     ByteBuffer buffer = ByteBuffer.allocate(1024);
                     while (true) {
                         String message = scanner.nextLine();
-                        buffer.put(message.getBytes());
+                        String data = "";
+                        if (message.equals("s")){
+                            File myObj = new File("src/main/java/Server/test.json");
+                            Scanner myReader = new Scanner(myObj);
+                            while (myReader.hasNextLine()) {
+                                data += myReader.nextLine();
+                            }
+                            System.out.println(data);
+                            myReader.close();
+                        }
+                        buffer.put(data.getBytes());
                         buffer.flip();
                         socketChannel.write(buffer);
                         buffer.clear();
