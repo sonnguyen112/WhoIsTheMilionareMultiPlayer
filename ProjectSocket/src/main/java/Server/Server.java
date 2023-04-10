@@ -34,8 +34,8 @@ public class Server {
     Connection con = null;
 
     public Server() throws ClassNotFoundException, SQLException{
-        Class.forName("com.mysql.jdbc.Driver");  
-        con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
+        Class.forName("org.sqlite.JDBC");  
+        con=DriverManager.getConnection("jdbc:sqlite:test.db");  
         //here sonoo is database name, root is username and password  
         stmt= con.createStatement();  
     }
