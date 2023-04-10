@@ -67,4 +67,3 @@ public class ClientTest {
         receiver.start();
     }
 }
-

@@ -10,6 +10,11 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,8 +28,18 @@ public class Server {
     private ByteBuffer bufferWrite = ByteBuffer.allocate(1024);
     private ObjectMapper objectMapper = new ObjectMapper();
     private ArrayList<String> namePlayers = new ArrayList<>();
+    private ArrayList<String> questionList = new ArrayList<>();
+    private ArrayList<Integer> questionListId = new ArrayList<>();
+    Statement stmt = null;
+    Connection con = null;
 
-    public void run() {
+    public Server() throws ClassNotFoundException, SQLException{
+        Class.forName("com.mysql.jdbc.Driver");  
+        con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
+        //here sonoo is database name, root is username and password  
+        stmt= con.createStatement();  
+    }
+    public void run() throws ClassNotFoundException, SQLException {
         try {
             selector = Selector.open();
             // We have to set connection host,port and
@@ -80,7 +95,7 @@ public class Server {
     }
 
     private void handleRead(SelectionKey key)
-            throws IOException {
+            throws IOException, ClassNotFoundException, SQLException {
         System.out.println("Reading client's message.");
 
         // create a ServerSocketChannel to read the request
@@ -106,8 +121,39 @@ public class Server {
         client.write(bufferWrite);
         bufferWrite.clear();
     }
+    
+    private  String getQuestionAction() throws ClassNotFoundException, SQLException{
+        String question = ""; 
+        int questionId = 0;
+        ResultSet rs=stmt.executeQuery("select * from questions");  
+        while(rs.next())  
+        {
+            question = rs.getString(2);
+            questionId = rs.getInt(1); 
+            System.out.println(questionId+"  "+question+"  "+rs.getInt(3));
+            questionList.add(question);
+            questionListId.add(questionId);
+        }  
+        String result = questionList.remove(0);
+        
+        return result;
+        
+    }
 
-    private void processData(String data, SocketChannel client) throws IOException {
+    private  ArrayList<String> getListOptions() throws ClassNotFoundException, SQLException{
+        ArrayList<String> ListOptions = new ArrayList<>();
+        String option = "";
+        ResultSet rs=stmt.executeQuery("select * from options WHERE QuestionID="+questionListId.remove(0));  
+        while(rs.next())  
+        {
+            option = rs.getString(2);
+            ListOptions.add(rs.getString(2));
+            System.out.println(rs.getInt(1)+"  "+option+"  "+rs.getInt(3));
+        }  
+        return ListOptions;
+    }
+
+    private void processData(String data, SocketChannel client) throws IOException, ClassNotFoundException, SQLException {
         HashMap<String, Object> jsonData = objectMapper.readValue(data, HashMap.class);
         if (jsonData.get("event").equals("joinRoom")) {
             HashMap<String, Object> response = new HashMap<>();
@@ -138,6 +184,16 @@ public class Server {
                 System.out.println("List Name: " + namePlayers);
                 return;
             }
+        }
+        if (jsonData.get("event").equals("getQuestion")){
+            HashMap<String, Object> response = new HashMap<>();
+            response.put("event","getQuestion");
+            String question = getQuestionAction();
+            response.put("question", question);
+            ArrayList<String> ListOptions = getListOptions();
+            response.put("options", ListOptions);
+            String jsonResponse = objectMapper.writeValueAsString(response);
+            sendData(jsonResponse, client);
         }
         if (data.equalsIgnoreCase(
                 "quit")) {
