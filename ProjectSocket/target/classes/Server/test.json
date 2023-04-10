@@ -1,3 +1,4 @@
 {
-  "event":"getQuestion"
+  "event":"joinRoom",
+  "name":"Son"
 }
