@@ -1,5 +1,6 @@
 package Client.WaitingRoom;
 import Client.Common.Common;
+import Client.Player.PlayerList;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,6 +55,16 @@ public class WaitingRoomPanel extends JLabel{
             this.add(name[2]);
             this.add(name[3]);
             this.add(labelOclock);
+    }
+
+    public void Update(){
+        for (int i = 0; i < PlayerList.getInstance().player_num; i++){
+            name[i].setText(PlayerList.getInstance().get(i).name);
+        }
+
+        if (PlayerList.getInstance().player_num == 4){
+            labelOclock.setText("GAME STARTS IN 5 SECONDS");
+        }
     }
 }   
 

@@ -36,8 +36,11 @@ public class MessageHandler {
                     }
                     
                     PlayerList.getInstance().set((Player[]) map.get("mess"));
-                    if (ClientSystem.getInstance().state == "waiting" && PlayerList.getInstance().player_num == 4){
-                        ClientSystem.getInstance().countDownToGame();
+                    if (ClientSystem.getInstance().state == "waiting"){
+                        if (PlayerList.getInstance().player_num == 4){
+                            ClientSystem.getInstance().countDownToGame();
+                        }
+                        WaitingRoomFrame.getInstance().waitingRoom.Update();
                     }
 
                     ClientSystem.getInstance().updatePlayers();
