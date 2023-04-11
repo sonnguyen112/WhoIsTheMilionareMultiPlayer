@@ -30,15 +30,26 @@ public class Server {
     private ArrayList<String> namePlayers = new ArrayList<>();
     private ArrayList<String> questionList = new ArrayList<>();
     private ArrayList<Integer> questionListId = new ArrayList<>();
+    private ArrayList<Integer> checkedQuestionListId = new ArrayList<>();
+    private ArrayList<Integer> trueAnswer = new ArrayList<>();
     Statement stmt = null;
     Connection con = null;
 
     public Server() throws ClassNotFoundException, SQLException{
-        Class.forName("com.mysql.jdbc.Driver");  
-        con=DriverManager.getConnection("jdbc:mysql://localhost:3306/internet1db","root","Khoi2921432");  
+        Class.forName("org.sqlite.JDBC");  
+        con=DriverManager.getConnection("jdbc:sqlite:test.db");  
         //here sonoo is database name, root is username and password  
         stmt= con.createStatement();  
     }
+    // Integer indexOption=0;
+    // ResultSet rs=stmt.executeQuery("select * from options WHERE isTrue =" + true);  
+    // while(rs.next())  
+    // {
+    
+    //     indexOption = rs.getInt(1);
+    //     trueAnswer.add(indexOption);
+    // }  
+
     public void run() throws ClassNotFoundException, SQLException {
         try {
             selector = Selector.open();
@@ -125,12 +136,14 @@ public class Server {
     private  String getQuestionAction() throws ClassNotFoundException, SQLException{
         String question = ""; 
         int questionId = 0;
+        Integer indexOption=0;
         ResultSet rs=stmt.executeQuery("select * from questions");  
         while(rs.next())  
         {
             question = rs.getString(2);
             questionId = rs.getInt(1); 
-            System.out.println(questionId+"  "+question+"  "+rs.getInt(3));
+            indexOption = rs.getInt(3);
+            trueAnswer.add(indexOption);
             questionList.add(question);
             questionListId.add(questionId);
         }  
@@ -140,15 +153,50 @@ public class Server {
         
     }
 
-    private  ArrayList<String> getListOptions() throws ClassNotFoundException, SQLException{
-        ArrayList<String> ListOptions = new ArrayList<>();
+    private Boolean getCheckedCorr(Object object){
+        if (trueAnswer.contains(object))
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+    private Boolean getCheckedIwin(){
+        if((!questionList.isEmpty()) || (namePlayers.size()==1))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private ArrayList<String> getListName(boolean corr,Object clientIndex){
+        ArrayList<String> ListName = new ArrayList<>();
+        for (int i = 0; i < namePlayers.size(); i++) {
+            ListName.add(namePlayers.get(i));
+        }
+        if(!corr)
+        {
+            ListName.remove(clientIndex);
+        }
+        return ListName;
+    }
+    private Integer getIndexQuestion(){
+        Integer CurrentIndex =  questionListId.get(0);
+        return CurrentIndex;
+    }
+    private  HashMap<Integer,String> getListOptions() throws ClassNotFoundException, SQLException{
+        HashMap<Integer,String> ListOptions = new HashMap<>();
         String option = "";
+        Integer indexOption = 0;
+        checkedQuestionListId.add(questionListId.get(0));
         ResultSet rs=stmt.executeQuery("select * from options WHERE QuestionID="+questionListId.remove(0));  
         while(rs.next())  
         {
             option = rs.getString(2);
-            ListOptions.add(rs.getString(2));
-            System.out.println(rs.getInt(1)+"  "+option+"  "+rs.getInt(3));
+            indexOption = rs.getInt(1);
+            ListOptions.put(indexOption,rs.getString(2));
+            System.out.println(indexOption+"  "+option+"  "+rs.getInt(3));
         }  
         return ListOptions;
     }
@@ -190,10 +238,26 @@ public class Server {
             response.put("event","getQuestion");
             String question = getQuestionAction();
             response.put("question", question);
-            ArrayList<String> ListOptions = getListOptions();
+            Integer questionId = getIndexQuestion();
+            response.put("questionId", questionId);
+            HashMap<Integer,String> ListOptions = getListOptions();
             response.put("options", ListOptions);
             String jsonResponse = objectMapper.writeValueAsString(response);
             sendData(jsonResponse, client);
+        }
+        if (jsonData.get("event").equals("answer")){
+            HashMap<String, Object> response = new HashMap<>();
+            if (checkedQuestionListId.contains(jsonData.get("question"))) {
+                response.put("event", "answer");
+                Boolean corr = getCheckedCorr(jsonData.get("answer"));
+                response.put("corr", corr);
+                Boolean iwin = getCheckedIwin();
+                response.put("iwin", iwin);
+                ArrayList<String> ListName = getListName(corr,client);
+                response.put("mess", ListName);
+                String jsonResponse = objectMapper.writeValueAsString(response);
+                sendData(jsonResponse, client);
+                return;
         }
         if (data.equalsIgnoreCase(
                 "quit")) {
@@ -204,3 +268,6 @@ public class Server {
         }
     }
 }
+}
+
+ 
