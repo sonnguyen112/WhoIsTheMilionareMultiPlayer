@@ -41,7 +41,7 @@ public class MessageHandler {
                     
                     if (ClientSystem.getInstance().state == "waiting"){
                         WaitingRoomFrame.getInstance().waitingRoom.Update();
-                        if (PlayerList.getInstance().size() == 2){
+                        if (PlayerList.getInstance().size() == ClientSystem.getInstance().player_number){
                             ClientSystem.getInstance().state = "playing";
                             ClientSystem.getInstance().countDownToGame();
                         }

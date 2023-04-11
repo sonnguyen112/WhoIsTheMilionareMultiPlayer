@@ -99,6 +99,12 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
         options[3].setText("Option 4");
         clock.setText("00");
 
+        questionLabel.setFont(new Font(null, Font.PLAIN, 30));
+        for (int i = 0; i < 4; i++){
+            options[i].setFont(new Font(null, Font.PLAIN, 30));
+            player_name[i].setFont(new Font(null, Font.PLAIN, 30));
+        }
+
         skipButton = new JButton();
         skipButton.setIcon(skipButtonImg);
         skipButton.setBounds(950, 460, 100, 100);

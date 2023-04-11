@@ -1,17 +1,15 @@
 package Client.System;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import Client.Player.Player;
 import Client.Player.PlayerList;
 import Client.PlayingRoom.PlayingRoomFrame;
 import Client.WaitingRoom.WaitingRoomFrame;
 
 public class ClientSystem {
     public int gameCountDown = 3;
-
+    public int player_number = 4;
     private ClientSystem(){}
     private static final ClientSystem sys = new ClientSystem();
     public ArrayList<String> currentAnswerID = new ArrayList<>();
@@ -46,12 +44,18 @@ public class ClientSystem {
 
     public void updatePlayers(){
         if (state == "playing"){
-            for (int i = 0; i < PlayerList.getInstance().size(); i++)
-                PlayingRoomFrame.getInstance().playpanel.player_name[i].setText(PlayerList.getInstance().getPlayer(i).name);
+            for (int i = 0; i < player_number; i++){
+                if (i < PlayerList.getInstance().size())
+                    PlayingRoomFrame.getInstance().playpanel.player_name[i].setText(PlayerList.getInstance().getPlayer(i).name);
+                else PlayingRoomFrame.getInstance().playpanel.player_name[i].setText("ELIMINATED");
+            }
         }
         else if (state == "waiting"){
-            for (int i = 0; i < PlayerList.getInstance().size(); i++)
-                WaitingRoomFrame.getInstance().waitingRoom.name[i].setText(PlayerList.getInstance().getPlayer(i).name);
+            for (int i = 0; i < player_number; i++){
+                if (i < PlayerList.getInstance().size())
+                    WaitingRoomFrame.getInstance().waitingRoom.name[i].setText(PlayerList.getInstance().getPlayer(i).name);
+                else WaitingRoomFrame.getInstance().waitingRoom.name[i].setText("WAITING...");
+            }
         }
     }
 
