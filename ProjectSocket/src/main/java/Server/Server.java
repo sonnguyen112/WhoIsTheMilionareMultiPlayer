@@ -121,9 +121,7 @@ public class Server {
             System.out.println("Received message: " + data);
             processData(data, client);
         }
-        System.out.println("Hello");
         bufferRead = ByteBuffer.allocate(1024);
-        System.out.println(new String(bufferRead.array()).trim());
     }
 
     private void sendData(String data, SocketChannel client) throws IOException {
