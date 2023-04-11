@@ -24,11 +24,6 @@ public class ClientSystem {
 
     public String state = "join game";
 
-    public void initPlayer(String name){
-        // Player you = new Player(name);
-        // PlayerList.getInstance().add(you);
-    }
-
     public void countDownToGame(){
         try {
             for (int i = 0; i < this.gameCountDown; i++){
@@ -78,15 +73,35 @@ public class ClientSystem {
         SocketHandler.getInstance().sendMessage(ready);
     }
 
-    // public void receiveFromServer(){
-    //     String result = SocketHandler.getInstance().waitForServer();
-    //     MessageHandler.handle(result);
-    // }
-
     public void joinGame(String playername){
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
-        this.initPlayer(playername);
         SocketHandler.getInstance().startConnection();
         SocketHandler.getInstance().sendMessage("{\"event\": \"joinRoom\", \"name\":\""+ playername + "\"}");
+    }
+
+    public void QuestionTimer(){
+        Thread timer = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int timeout = 30;
+                    while (PlayerList.getInstance().answer){
+                        try {
+                            PlayingRoomFrame.getInstance().playpanel.clock.setText("" + timeout);
+                            TimeUnit.SECONDS.sleep(1);
+                            timeout--;
+                            if (timeout == 0){
+                                ClientSystem.getInstance().sendAnswerToServer(-2);
+                                PlayerList.getInstance().answer = false;
+                                break;
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        );
+
+        timer.start();
     }
 }

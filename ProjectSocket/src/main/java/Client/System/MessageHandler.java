@@ -1,16 +1,12 @@
 package Client.System;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import javax.sound.midi.SysexMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Client.MainMenu.MainMenuFrame;
-import Client.Player.Player;
 import Client.Player.PlayerList;
 import Client.PlayingRoom.PlayingRoomFrame;
 import Client.WaitingRoom.WaitingRoomFrame;
@@ -46,7 +42,6 @@ public class MessageHandler {
                     if (ClientSystem.getInstance().state == "waiting"){
                         WaitingRoomFrame.getInstance().waitingRoom.Update();
                         if (PlayerList.getInstance().size() == 2){
-                            System.out.println("------------------------------");
                             ClientSystem.getInstance().state = "playing";
                             ClientSystem.getInstance().countDownToGame();
                         }
@@ -57,7 +52,6 @@ public class MessageHandler {
 
                 case GET_QUESTION:
                     String playerturn = (String) map.get("name_player");
-                    System.out.println("Player turn: " + playerturn + "   " + PlayerList.getInstance().playername);
 
                     if (PlayerList.getInstance().playername.equals(playerturn)){
                         String currentQues = (String) map.get("question");
@@ -66,7 +60,7 @@ public class MessageHandler {
                         PlayerList.getInstance().answer = true;
                         Map<String, String> anws = (Map<String, String>) map.get("options");
 
-                        System.out.println("----GET QUEST: " + currentQues);
+                        System.out.println("-----------GET QUEST-------------");
 
                         PlayingRoomFrame.getInstance().playpanel.questionLabel.setText(currentQues);
 
@@ -76,7 +70,9 @@ public class MessageHandler {
                             PlayingRoomFrame.getInstance().playpanel.options[index++].setText(anws.get(id));
                             ClientSystem.getInstance().currentAnswerID.add(id);
                         }
-                            
+                        
+                        PlayerList.getInstance().answer = true;
+                        ClientSystem.getInstance().QuestionTimer();
                     }
                     break;
                     

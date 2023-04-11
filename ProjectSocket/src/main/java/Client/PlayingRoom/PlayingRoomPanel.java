@@ -17,7 +17,7 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
     public JButton options[] = new JButton[4];
     public JLabel player_name[] = new JLabel[4];
     public JLabel questionLabel;
-    JLabel clock;
+    public JLabel clock;
     ImageIcon image;
     public JButton skipButton;
     PlayingRoomPanel(){
@@ -123,7 +123,7 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // if (PlayerList.getInstance().answer == false) return;
+        if (PlayerList.getInstance().answer == false) return;
 
         if (e.getSource() == options[0]){
             ClientSystem.getInstance().sendAnswerToServer(0);
