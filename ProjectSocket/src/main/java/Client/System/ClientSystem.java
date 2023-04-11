@@ -9,7 +9,7 @@ import Client.WaitingRoom.WaitingRoomFrame;
 
 public class ClientSystem {
     public int gameCountDown = 3;
-    public int player_number = 4;
+    public int player_number = 2;
     private ClientSystem(){}
     private static final ClientSystem sys = new ClientSystem();
     public ArrayList<String> currentAnswerID = new ArrayList<>();
