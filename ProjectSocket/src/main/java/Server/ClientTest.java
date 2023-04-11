@@ -26,7 +26,7 @@ public class ClientTest {
                         String message = scanner.nextLine();
                         String data = "";
                         if (message.equals("s")){
-                            File myObj = new File("src/main/java/Server/test.json");
+                            File myObj = new File("ProjectSocket/src/main/java/Server/test.json");
                             Scanner myReader = new Scanner(myObj);
                             while (myReader.hasNextLine()) {
                                 data += myReader.nextLine();
