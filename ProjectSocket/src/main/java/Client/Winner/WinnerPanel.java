@@ -16,10 +16,10 @@ public class WinnerPanel extends JLabel implements ActionListener{
     ImageIcon ImageIcon;
     JButton ReplayButton;
     WinnerPanel(){
-        image = new ImageIcon(new ImageIcon("Image/WinnerImg.png").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
+        image = new ImageIcon(new ImageIcon("src/main/java/Client/Image/WinnerImg.png").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
         this.setPreferredSize(new Dimension(1100, 700));
         ReplayButton = new JButton();
-        ImageIcon =new ImageIcon(new ImageIcon("Image/replayButton.png").getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH));
+        ImageIcon =new ImageIcon(new ImageIcon("src/main/java/Client/Image/replayButton.png").getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH));
         ReplayButton.setIcon(ImageIcon);
         this.setIcon(image);
         ReplayButton.setBounds(900,600,200,100);

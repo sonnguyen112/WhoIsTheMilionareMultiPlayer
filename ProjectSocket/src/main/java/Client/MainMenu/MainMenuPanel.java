@@ -3,6 +3,7 @@ package Client.MainMenu;
 import javax.swing.*;
 
 import Client.Common.Common;
+import Client.Player.PlayerList;
 import Client.PlayingRoom.PlayingRoomFrame;
 import Client.System.ClientSystem;
 import Client.Utils.Vadiation;
@@ -29,7 +30,7 @@ public class MainMenuPanel extends JLabel implements ActionListener {
         textField.setForeground(Color.WHITE);
         textField.setBackground(Color.black);
         textField.setCaretColor(Color.white);
-        textField.setText("Enter Your Name");
+        textField.setText("Ee3_");
         textField.setHorizontalAlignment(JTextField.CENTER);
         textField.setBounds(Common.WIDTH / 2 - 350/2, Common.HEIGHT/2 + 100, 350, 40);
 
@@ -56,6 +57,7 @@ public class MainMenuPanel extends JLabel implements ActionListener {
         if (e.getSource() == button){
             String playerName = textField.getText();
             if (Vadiation.checkNickName(playerName)){
+                PlayerList.getInstance().playername = playerName;
                 ClientSystem.getInstance().joinGame(playerName, "localhost", 8089);
             }
             else {

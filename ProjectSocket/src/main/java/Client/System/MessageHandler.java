@@ -1,5 +1,7 @@
 package Client.System;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.sound.midi.SysexMessage;
@@ -21,46 +23,73 @@ public class MessageHandler {
 
     public static String handle(String mess){
         try {
+            System.out.println(mess);
             Map<String, Object> map = jsonToMap(mess);
             switch ((String) map.get("event")){
                 case JOINING_ROOM:
                     MainMenuFrame.getInstance().menupanel.notification((String) map.get("mess"), "SERVER");
                 break;
                 case UPDATE:
+                    PlayerList.getInstance().currentPlayer = (PlayerList.getInstance().currentPlayer + 1) % 4;
+                    ArrayList<String> ne = (ArrayList<String>) map.get("mess");
+                    PlayerList.getInstance().set(ne);
+
                     if (((String) map.get("status")).equals("success") && ClientSystem.getInstance().state == "join game"){
                         WinnerFrame.getInstance().setVisible(false);
+                        WaitingRoomFrame.getInstance().waitingRoom.Update();
                         WaitingRoomFrame.getInstance().setVisible(true);
                         MainMenuFrame.getInstance().setVisible(false);
                         PlayingRoomFrame.getInstance().setVisible(false);
                         ClientSystem.getInstance().state = "waiting";
                     }
                     
-                    PlayerList.getInstance().set((Player[]) map.get("mess"));
                     if (ClientSystem.getInstance().state == "waiting"){
-                        if (PlayerList.getInstance().player_num == 4){
+                        WaitingRoomFrame.getInstance().waitingRoom.Update();
+                        if (PlayerList.getInstance().size() == 2){
+                            System.out.println("------------------------------");
                             ClientSystem.getInstance().countDownToGame();
                         }
-                        WaitingRoomFrame.getInstance().waitingRoom.Update();
                     }
 
                     ClientSystem.getInstance().updatePlayers();
                 break;
-                case GET_QUESTION:
-                    String currentQues = (String) map.get("ques");
-                    String[] anws = (String[]) map.get("answer");
 
-                    PlayingRoomFrame.getInstance().playpanel.questionLabel.setText(currentQues);
-                    for (int i = 0; i < 4; i++)
-                        PlayingRoomFrame.getInstance().playpanel.options[i].setText(anws[i]);
+                case GET_QUESTION:
+                    String playerturn = (String) map.get("name_player");
+                    System.out.println("Player turn: " + playerturn + "   " + PlayerList.getInstance().playername);
+
+                    if (PlayerList.getInstance().playername.equals(playerturn)){
+                        String currentQues = (String) map.get("question");
+                        ClientSystem.getInstance().QuestionID = String.valueOf(map.get("questionId"));
+
+                        PlayerList.getInstance().answer = true;
+                        Map<String, String> anws = (Map<String, String>) map.get("options");
+
+                        System.out.println("----GET QUEST: " + currentQues);
+
+                        PlayingRoomFrame.getInstance().playpanel.questionLabel.setText(currentQues);
+
+                        int index = 0;
+                        ClientSystem.getInstance().currentAnswerID.clear();
+                        for (String id : anws.keySet()){
+                            PlayingRoomFrame.getInstance().playpanel.options[index++].setText(anws.get(id));
+                            ClientSystem.getInstance().currentAnswerID.add(id);
+                        }
+                            
+                    }
                     break;
+                    
                 case ANSWER:
+                    System.out.println("-------------get correct answ--------------");
                     Boolean iwin = (Boolean) map.get("iwin");
                     Boolean corr = (Boolean) map.get("corr");
 
-                    PlayerList.getInstance().set((Player[]) map.get("mess"));
+                    PlayerList.getInstance().set((ArrayList<String>) map.get("mess"));
                     ClientSystem.getInstance().updatePlayers();
+                    System.out.println("get corr and iwin");
 
                     if (iwin){
+                        SocketHandler.getInstance().sendMessage("quit");
                         WinnerFrame.getInstance().setVisible(true);
                         WaitingRoomFrame.getInstance().setVisible(false);
                         MainMenuFrame.getInstance().setVisible(false);
@@ -69,8 +98,9 @@ public class MessageHandler {
                         SocketHandler.getInstance().stopConnection();
                     }
                     else if (!corr){
+                        SocketHandler.getInstance().sendMessage("quit");
                         WinnerFrame.getInstance().setVisible(false);
-                        WaitingRoomFrame.getInstance().setVisible(true);
+                        WaitingRoomFrame.getInstance().setVisible(false);
                         MainMenuFrame.getInstance().setVisible(false);
                         PlayingRoomFrame.getInstance().setVisible(false);
                         ClientSystem.getInstance().state = "join game";

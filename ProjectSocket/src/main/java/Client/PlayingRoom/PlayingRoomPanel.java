@@ -5,6 +5,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import Client.Common.Common;
+import Client.Player.PlayerList;
 import Client.System.ClientSystem;
 
 import java.awt.*;
@@ -105,6 +106,11 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
         skipButton.setContentAreaFilled(false);
         skipButton.setBorderPainted(false);
 
+        for (int i = 0; i < 4; i++){
+            options[i].addActionListener(this);
+        }
+        skipButton.addActionListener(this);
+
         this.add(player_name[0]);
         this.add(player_name[1]);
         this.add(player_name[2]);
@@ -117,6 +123,9 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // if (PlayerList.getInstance().answer == false) return;
+        System.out.println("CLIEN ANSWER");
+
         if (e.getSource() == options[0]){
             ClientSystem.getInstance().sendAnswerToServer(0);
         }
@@ -132,5 +141,7 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
         else if (e.getSource() == skipButton){
             ClientSystem.getInstance().sendAnswerToServer(-1);
         }
+
+        PlayerList.getInstance().answer = false;
     }
 }

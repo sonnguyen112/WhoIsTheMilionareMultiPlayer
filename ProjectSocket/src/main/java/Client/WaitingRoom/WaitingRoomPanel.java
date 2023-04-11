@@ -40,10 +40,15 @@ public class WaitingRoomPanel extends JLabel{
             labelOclock = new JLabel();
             labelOclock.setVerticalAlignment(JLabel.CENTER);
             labelOclock.setHorizontalAlignment(JLabel.CENTER);
-            labelOclock.setBounds(500, 15, 100,100);
+            labelOclock.setBounds(100, 15, 700, 100);
             labelOclock.setOpaque(false);
-            labelOclock.setFont(new Font("Serif", Font.PLAIN, 40));
+            labelOclock.setFont(new Font("Serif", Font.PLAIN, 30));
             labelOclock.setForeground(Color.white);
+            name[0].setFont(new Font("Serif", Font.PLAIN, 20));
+            name[1].setFont(new Font("Serif", Font.PLAIN, 20));
+            name[2].setFont(new Font("Serif", Font.PLAIN, 20));
+            name[3].setFont(new Font("Serif", Font.PLAIN, 20));
+
             name[0].setText("Waiting...");
             name[1].setText("Waiting...");
             name[2].setText("Waiting...");
@@ -58,11 +63,13 @@ public class WaitingRoomPanel extends JLabel{
     }
 
     public void Update(){
-        for (int i = 0; i < PlayerList.getInstance().player_num; i++){
+        System.out.println("update waiting room");
+        for (int i = 0; i < PlayerList.getInstance().size(); i++){
+            System.out.print("update waiting");
             name[i].setText(PlayerList.getInstance().get(i).name);
         }
 
-        if (PlayerList.getInstance().player_num == 4){
+        if (PlayerList.getInstance().size() == 4){
             labelOclock.setText("GAME STARTS IN 5 SECONDS");
         }
     }
