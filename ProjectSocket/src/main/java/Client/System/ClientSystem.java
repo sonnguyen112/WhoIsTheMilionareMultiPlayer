@@ -11,7 +11,7 @@ import Client.Winner.WinnerFrame;
 
 public class ClientSystem {
     public int gameCountDown = 3;
-    public int player_number = 2;
+    public int player_number = 4;
     private ClientSystem(){}
     private static final ClientSystem sys = new ClientSystem();
     public ArrayList<String> currentAnswerID = new ArrayList<>();
@@ -85,7 +85,9 @@ public class ClientSystem {
     public void sendAnswerToServer(int answer_){
         String answer = "-1";
         String quesid = ClientSystem.getInstance().QuestionID;
-        if (answer_ != -1){
+        if (answer_ == -1) quesid = "-1";
+        else if (answer_ == -2) quesid = "-2";
+        else{
             answer = ClientSystem.getInstance().currentAnswerID.get(answer_);
         }
 

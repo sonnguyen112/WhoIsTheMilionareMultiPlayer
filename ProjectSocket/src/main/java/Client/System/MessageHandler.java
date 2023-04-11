@@ -22,9 +22,9 @@ public class MessageHandler {
     static final String ANSWER = "answer";
 
     public static String handle(String mess){
-        if (mess == "reset"){
+        if (mess.equals("reset")){
             System.out.println("YOU LOSE");
-            // SocketHandler.getInstance().sendMessage("quit");
+            SocketHandler.getInstance().sendMessage("quit");
             SocketHandler.getInstance().stopConnection();
             // PlayingRoomFrame.getInstance().playpanel.notification("Wrong answer, you are dead", "lose");
             WinnerFrame.getInstance().setVisible(false);
@@ -114,6 +114,7 @@ public class MessageHandler {
                     if (iwin){
                         System.out.println("QUIT FOR WINNING");
                         SocketHandler.getInstance().sendMessage("reset");
+                        SocketHandler.getInstance().sendMessage("quit");
                         SocketHandler.getInstance().stopConnection();
                         WinnerFrame.getInstance().setVisible(true);
                         WaitingRoomFrame.getInstance().setVisible(false);
