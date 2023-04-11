@@ -1,6 +1,7 @@
 package Server;/*package whatever //do not write package name here */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.xdevapi.Client;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -21,7 +22,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Server {
-    private final int NUM_PLAYER = 4;
+    private final int NUM_PLAYER = 2;
     private Selector selector = null;
     private ArrayList<SocketChannel> clients = new ArrayList<>();
     private ByteBuffer bufferRead = ByteBuffer.allocate(1024);
@@ -34,6 +35,7 @@ public class Server {
     private ArrayList<Integer> trueAnswer = new ArrayList<>();
     Statement stmt = null;
     Connection con = null;
+    int curPlayerIndex = 0;
 
     public Server() throws ClassNotFoundException, SQLException{
         Class.forName("org.sqlite.JDBC");  
@@ -162,7 +164,7 @@ public class Server {
 
 
     private Boolean getCheckedIwin(){
-        if((!questionList.isEmpty()) || (namePlayers.size()==1))
+        if((questionList.isEmpty()) || (namePlayers.size()==1))
         {
             return true;
         }
@@ -201,6 +203,15 @@ public class Server {
     }
 
     private void processData(String data, SocketChannel client) throws IOException, ClassNotFoundException, SQLException {
+        if (data.equalsIgnoreCase(
+                "quit")) {
+            // for (int i = 0; i < clients.size(); i++) {
+            client.close();
+            System.out.println("Connection closed...");
+            return;
+        }
+
+
         HashMap<String, Object> jsonData = objectMapper.readValue(data, HashMap.class);
         if (jsonData.get("event").equals("joinRoom")) {
             HashMap<String, Object> response = new HashMap<>();
@@ -241,14 +252,16 @@ public class Server {
             response.put("questionId", questionId);
             HashMap<Integer,String> ListOptions = getListOptions();
             response.put("options", ListOptions);
+            response.put("name_player", namePlayers.get(curPlayerIndex ));
+            curPlayerIndex = (curPlayerIndex + 1) % NUM_PLAYER;
             String jsonResponse = objectMapper.writeValueAsString(response);
-            sendData(jsonResponse, client);
+            for (int i = 0; i < clients.size(); i++) sendData(jsonResponse, clients.get(i));
         }
         if (jsonData.get("event").equals("answer")){
             HashMap<String, Object> response = new HashMap<>();
             if (checkedQuestionListId.contains(jsonData.get("question"))) {
                 response.put("event", "answer");
-                Boolean corr = getCheckedCorr(jsonData.get("answer"));
+                Boolean corr = getCheckedCorr(Integer.parseInt((String) jsonData.get("answer")));
                 response.put("corr", corr);
                 Boolean iwin = getCheckedIwin();
                 response.put("iwin", iwin);
@@ -256,6 +269,17 @@ public class Server {
                 response.put("mess", ListName);
                 String jsonResponse = objectMapper.writeValueAsString(response);
                 sendData(jsonResponse, client);
+                System.out.println("send: " + jsonResponse);
+                
+                // response = new HashMap<>();
+                // response.put("event", "update");
+                // response.put("status", "success");
+                // response.put("mess", ListName);
+                // jsonResponse = "";
+                // jsonResponse = objectMapper.writeValueAsString(response);
+                // for (int i = 0; i < clients.size(); i++) {
+                //     sendData(jsonResponse, clients.get(i));
+                // }
                 return;
         }
         if (data.equalsIgnoreCase(
