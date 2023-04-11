@@ -33,6 +33,7 @@ public class Server {
     private ArrayList<Integer> questionListId = new ArrayList<>();
     Statement stmt = null;
     Connection con = null;
+    int curPlayer = 0;
 
     public Server() throws ClassNotFoundException, SQLException{
         Class.forName("org.sqlite.JDBC");  
@@ -101,7 +102,8 @@ public class Server {
 
         // create a ServerSocketChannel to read the request
         SocketChannel client = (SocketChannel) key.channel();
-
+        
+        // bufferRead.limit(1024);
         client.read(bufferRead);
         bufferRead.flip();
 
@@ -111,8 +113,7 @@ public class Server {
             System.out.println("Received message: " + data);
             processData(data, client);
         }
-        bufferWrite.clear();
-        bufferRead.clear();
+        bufferRead = ByteBuffer.allocate(1024);
     }
 
     private void sendData(String data, SocketChannel client) throws IOException {
@@ -193,8 +194,12 @@ public class Server {
             response.put("question", question);
             ArrayList<String> ListOptions = getListOptions();
             response.put("options", ListOptions);
-            String jsonResponse = objectMapper.writeValueAsString(response);
-            sendData(jsonResponse, client);
+            response.put("name_player", namePlayers.get(curPlayer+1));
+            curPlayer = (curPlayer + 1) % NUM_PLAYER;
+            String jsonResponse = objectMapper.writeValueAsString(response);;
+            for (int i = 0; i < clients.size(); i++){
+                sendData(jsonResponse, client);
+            }
         }
         if (data.equalsIgnoreCase(
                 "quit")) {
