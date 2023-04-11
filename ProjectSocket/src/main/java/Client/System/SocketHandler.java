@@ -6,24 +6,37 @@ import java.nio.channels.SocketChannel;
 
 public class SocketHandler {
     SocketChannel socketChannel;
-    String receive_message;
     Thread receiver;
+    boolean working = false;
 
-    private SocketHandler(){
-        try {
-            SocketChannel socketChannel = SocketChannel.open();
+    private SocketHandler(){}
+    static private SocketHandler singleton = new SocketHandler();
+    static public SocketHandler getInstance(){
+        return singleton;
+    }
+
+    public void startConnection(){
+        try{
+            socketChannel = SocketChannel.open();
             socketChannel.connect(new InetSocketAddress("localhost", 8089));
-        } catch (Exception e) {
         }
+        catch(Exception x){
+
+        }
+
         receiver = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    working = true;
+
                     ByteBuffer buffer = ByteBuffer.allocate(1024);
-                    while (true) {
+                    while (working) {
+                        System.out.println("Client is ready for next income");
                         socketChannel.read(buffer);
                         buffer.flip();
                         String message = new String(buffer.array()).trim();
+                        if (message.equals("")) break;
                         System.out.println("Received message: " + message);
 
                         if (message != null) MessageHandler.handle(message);
@@ -35,20 +48,6 @@ public class SocketHandler {
         });
 
         receiver.start();
-    }
-    static private SocketHandler singleton = new SocketHandler();
-    static public SocketHandler getInstance(){
-        return singleton;
-    }
-
-    public void startConnection(String ip, int port){
-        try {
-            socketChannel = SocketChannel.open();
-            socketChannel.connect(new InetSocketAddress("localhost", 8089));
-        }
-        catch (Exception ex){
-            
-        }
     }
 
     public void sendMessage(String msg){
@@ -66,7 +65,9 @@ public class SocketHandler {
 
     public void stopConnection(){
         try {
+            working = false;
             socketChannel.close();
+            System.out.println("STOP CONNECTION");
         } catch (Exception e) {
             
         }

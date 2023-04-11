@@ -6,7 +6,7 @@ import javax.swing.*;
 public class WinnerFrame extends JFrame{
     public WinnerPanel winner = new WinnerPanel();
 
-    public WinnerFrame(){
+    private WinnerFrame(){
         this.add(winner);
         this.pack();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

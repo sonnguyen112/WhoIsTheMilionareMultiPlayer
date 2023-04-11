@@ -33,7 +33,7 @@ public class ClientSystem {
         try {
             for (int i = 0; i < this.gameCountDown; i++){
                 TimeUnit.SECONDS.sleep(1);
-                WaitingRoomFrame.getInstance().waitingRoom.labelOclock.setText("GAME IN " + (3-i));
+                WaitingRoomFrame.getInstance().waitingRoom.labelOclock.setText("GAME IN " + (2-i));
             }
 
             WaitingRoomFrame.getInstance().setVisible(false);
@@ -83,10 +83,10 @@ public class ClientSystem {
     //     MessageHandler.handle(result);
     // }
 
-    public void joinGame(String playername, String ipaddr, int port){
+    public void joinGame(String playername){
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
         this.initPlayer(playername);
-        SocketHandler.getInstance().startConnection(ipaddr, port);
+        SocketHandler.getInstance().startConnection();
         SocketHandler.getInstance().sendMessage("{\"event\": \"joinRoom\", \"name\":\""+ playername + "\"}");
     }
 }

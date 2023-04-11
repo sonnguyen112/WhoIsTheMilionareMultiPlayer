@@ -3,6 +3,7 @@ package Client.System;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.midi.SysexMessage;
 
@@ -23,7 +24,6 @@ public class MessageHandler {
 
     public static String handle(String mess){
         try {
-            System.out.println(mess);
             Map<String, Object> map = jsonToMap(mess);
             switch ((String) map.get("event")){
                 case JOINING_ROOM:
@@ -47,6 +47,7 @@ public class MessageHandler {
                         WaitingRoomFrame.getInstance().waitingRoom.Update();
                         if (PlayerList.getInstance().size() == 2){
                             System.out.println("------------------------------");
+                            ClientSystem.getInstance().state = "playing";
                             ClientSystem.getInstance().countDownToGame();
                         }
                     }
@@ -80,31 +81,37 @@ public class MessageHandler {
                     break;
                     
                 case ANSWER:
-                    System.out.println("-------------get correct answ--------------");
                     Boolean iwin = (Boolean) map.get("iwin");
                     Boolean corr = (Boolean) map.get("corr");
 
                     PlayerList.getInstance().set((ArrayList<String>) map.get("mess"));
                     ClientSystem.getInstance().updatePlayers();
-                    System.out.println("get corr and iwin");
 
-                    if (iwin){
+                    if (iwin || (PlayerList.getInstance().size() == 1)){
+                        PlayerList.getInstance().Clear();
                         SocketHandler.getInstance().sendMessage("quit");
+                        SocketHandler.getInstance().stopConnection();
                         WinnerFrame.getInstance().setVisible(true);
                         WaitingRoomFrame.getInstance().setVisible(false);
                         MainMenuFrame.getInstance().setVisible(false);
                         PlayingRoomFrame.getInstance().setVisible(false);
                         ClientSystem.getInstance().state = "join game";
-                        SocketHandler.getInstance().stopConnection();
+
+                        TimeUnit.SECONDS.sleep(3);
+                        WinnerFrame.getInstance().setVisible(false);
+                        WaitingRoomFrame.getInstance().setVisible(false);
+                        MainMenuFrame.getInstance().setVisible(true);
+                        PlayingRoomFrame.getInstance().setVisible(false);
                     }
                     else if (!corr){
                         SocketHandler.getInstance().sendMessage("quit");
+                        PlayerList.getInstance().Clear();
+                        SocketHandler.getInstance().stopConnection();
                         WinnerFrame.getInstance().setVisible(false);
                         WaitingRoomFrame.getInstance().setVisible(false);
-                        MainMenuFrame.getInstance().setVisible(false);
+                        MainMenuFrame.getInstance().setVisible(true);
                         PlayingRoomFrame.getInstance().setVisible(false);
                         ClientSystem.getInstance().state = "join game";
-                        SocketHandler.getInstance().stopConnection();
                     }
             }
 

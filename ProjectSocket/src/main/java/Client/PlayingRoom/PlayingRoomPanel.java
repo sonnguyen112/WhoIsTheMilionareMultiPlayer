@@ -124,7 +124,6 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         // if (PlayerList.getInstance().answer == false) return;
-        System.out.println("CLIEN ANSWER");
 
         if (e.getSource() == options[0]){
             ClientSystem.getInstance().sendAnswerToServer(0);
