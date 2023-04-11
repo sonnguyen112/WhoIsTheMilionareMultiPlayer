@@ -84,7 +84,7 @@ public class MessageHandler {
                     ClientSystem.getInstance().updatePlayers();
 
                     if (iwin || (PlayerList.getInstance().size() == 1)){
-                        PlayerList.getInstance().Clear();
+                        System.out.println("QUIT FOR WINNING");
                         SocketHandler.getInstance().sendMessage("quit");
                         SocketHandler.getInstance().stopConnection();
                         WinnerFrame.getInstance().setVisible(true);
@@ -100,8 +100,8 @@ public class MessageHandler {
                         PlayingRoomFrame.getInstance().setVisible(false);
                     }
                     else if (!corr){
+                        System.out.println("QUIT FOR WRONG ANSWER");
                         SocketHandler.getInstance().sendMessage("quit");
-                        PlayerList.getInstance().Clear();
                         SocketHandler.getInstance().stopConnection();
                         WinnerFrame.getInstance().setVisible(false);
                         WaitingRoomFrame.getInstance().setVisible(false);

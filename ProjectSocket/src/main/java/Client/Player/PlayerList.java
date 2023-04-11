@@ -35,8 +35,4 @@ public class PlayerList {
     public Player get(int index) {
         return players.get(index);
     }
-
-    public void Clear(){
-        players.clear();
-    }
 }
