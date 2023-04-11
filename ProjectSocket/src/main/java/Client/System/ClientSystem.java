@@ -3,9 +3,11 @@ package Client.System;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import Client.MainMenu.MainMenuFrame;
 import Client.Player.PlayerList;
 import Client.PlayingRoom.PlayingRoomFrame;
 import Client.WaitingRoom.WaitingRoomFrame;
+import Client.Winner.WinnerFrame;
 
 public class ClientSystem {
     public int gameCountDown = 3;
@@ -32,8 +34,6 @@ public class ClientSystem {
             WaitingRoomFrame.getInstance().setVisible(false);
             PlayingRoomFrame.getInstance().setVisible(true);
 
-            System.out.println(PlayerList.getInstance().playername);
-            System.out.println(PlayerList.getInstance().get(0).name);
             if (PlayerList.getInstance().playername.equals(PlayerList.getInstance().get(0).name)){
                 SocketHandler.getInstance().sendMessage("{\"event\":\"getQuestion\"}");
             }
@@ -43,16 +43,39 @@ public class ClientSystem {
     }
 
     public void updatePlayers(){
+        int remain = PlayerList.getInstance().size();
+
         if (state == "playing"){
             for (int i = 0; i < player_number; i++){
-                if (i < PlayerList.getInstance().size())
+                if (i < remain)
                     PlayingRoomFrame.getInstance().playpanel.player_name[i].setText(PlayerList.getInstance().getPlayer(i).name);
                 else PlayingRoomFrame.getInstance().playpanel.player_name[i].setText("ELIMINATED");
+            }
+            if (remain == 1 && PlayerList.getInstance().playername.equals(PlayerList.getInstance().get(0).name)){
+                System.out.println("QUIT FOR WINNING");
+                SocketHandler.getInstance().sendMessage("reset");
+                SocketHandler.getInstance().stopConnection();
+                WinnerFrame.getInstance().setVisible(true);
+                WaitingRoomFrame.getInstance().setVisible(false);
+                MainMenuFrame.getInstance().setVisible(false);
+                PlayingRoomFrame.getInstance().setVisible(false);
+                ClientSystem.getInstance().state = "join game";
+
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                WinnerFrame.getInstance().setVisible(false);
+                WaitingRoomFrame.getInstance().setVisible(false);
+                MainMenuFrame.getInstance().setVisible(true);
+                PlayingRoomFrame.getInstance().setVisible(false);
             }
         }
         else if (state == "waiting"){
             for (int i = 0; i < player_number; i++){
-                if (i < PlayerList.getInstance().size())
+                if (i < remain)
                     WaitingRoomFrame.getInstance().waitingRoom.name[i].setText(PlayerList.getInstance().getPlayer(i).name);
                 else WaitingRoomFrame.getInstance().waitingRoom.name[i].setText("WAITING...");
             }
@@ -108,4 +131,5 @@ public class ClientSystem {
 
         timer.start();
     }
+    
 }

@@ -149,4 +149,8 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
 
         PlayerList.getInstance().answer = false;
     }
+
+    public void notification(String string, String string2) {
+        this.notification(string, string2);
+    }
 }

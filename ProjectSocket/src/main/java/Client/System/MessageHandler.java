@@ -1,8 +1,11 @@
 package Client.System;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.sound.midi.Soundbank;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,6 +22,19 @@ public class MessageHandler {
     static final String ANSWER = "answer";
 
     public static String handle(String mess){
+        if (mess == "reset"){
+            System.out.println("YOU LOSE");
+            // SocketHandler.getInstance().sendMessage("quit");
+            SocketHandler.getInstance().stopConnection();
+            // PlayingRoomFrame.getInstance().playpanel.notification("Wrong answer, you are dead", "lose");
+            WinnerFrame.getInstance().setVisible(false);
+            WaitingRoomFrame.getInstance().setVisible(false);
+            MainMenuFrame.getInstance().setVisible(true);
+            PlayingRoomFrame.getInstance().setVisible(false);
+            ClientSystem.getInstance().state = "join game";
+            return "";
+        }
+
         try {
             Map<String, Object> map = jsonToMap(mess);
             switch ((String) map.get("event")){
@@ -52,6 +68,12 @@ public class MessageHandler {
 
                 case GET_QUESTION:
                     String playerturn = (String) map.get("name_player");
+                    for (int i = 0; i < ClientSystem.getInstance().player_number; i++){
+                        if (playerturn.equals(PlayerList.getInstance().getPlayer(i).name)){
+                            PlayingRoomFrame.getInstance().playpanel.player_name[i].setBackground(Color.CYAN);
+                        }
+                        else PlayingRoomFrame.getInstance().playpanel.player_name[i].setBackground(Color.WHITE);
+                    }
 
                     if (PlayerList.getInstance().playername.equals(playerturn)){
                         String currentQues = (String) map.get("question");
@@ -62,17 +84,23 @@ public class MessageHandler {
 
                         System.out.println("-----------GET QUEST-------------");
 
-                        PlayingRoomFrame.getInstance().playpanel.questionLabel.setText(currentQues);
+                        PlayingRoomFrame.getInstance().playpanel.questionLabel.setText("<html><p>"+currentQues+"</p></html>");
 
                         int index = 0;
                         ClientSystem.getInstance().currentAnswerID.clear();
                         for (String id : anws.keySet()){
-                            PlayingRoomFrame.getInstance().playpanel.options[index++].setText(anws.get(id));
+                            PlayingRoomFrame.getInstance().playpanel.options[index++].setText("<html><p>"+anws.get(id)+"</p></html>");
                             ClientSystem.getInstance().currentAnswerID.add(id);
                         }
                         
                         PlayerList.getInstance().answer = true;
                         ClientSystem.getInstance().QuestionTimer();
+                    }
+                    else {
+                        for (int i = 0; i < 4; i++){
+                            PlayingRoomFrame.getInstance().playpanel.options[i].setText("Nothing");
+                        }
+                        PlayingRoomFrame.getInstance().playpanel.questionLabel.setText("Wait for another player");
                     }
                     break;
                     
@@ -83,9 +111,9 @@ public class MessageHandler {
                     PlayerList.getInstance().set((ArrayList<String>) map.get("mess"));
                     ClientSystem.getInstance().updatePlayers();
 
-                    if (iwin || (PlayerList.getInstance().size() == 1)){
+                    if (iwin){
                         System.out.println("QUIT FOR WINNING");
-                        SocketHandler.getInstance().sendMessage("quit");
+                        SocketHandler.getInstance().sendMessage("reset");
                         SocketHandler.getInstance().stopConnection();
                         WinnerFrame.getInstance().setVisible(true);
                         WaitingRoomFrame.getInstance().setVisible(false);
@@ -103,6 +131,7 @@ public class MessageHandler {
                         System.out.println("QUIT FOR WRONG ANSWER");
                         SocketHandler.getInstance().sendMessage("quit");
                         SocketHandler.getInstance().stopConnection();
+                        // PlayingRoomFrame.getInstance().playpanel.notification("Wrong answer, you are dead", "lose");
                         WinnerFrame.getInstance().setVisible(false);
                         WaitingRoomFrame.getInstance().setVisible(false);
                         MainMenuFrame.getInstance().setVisible(true);

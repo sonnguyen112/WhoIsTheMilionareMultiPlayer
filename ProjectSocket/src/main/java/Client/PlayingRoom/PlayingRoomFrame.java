@@ -2,8 +2,6 @@ package Client.PlayingRoom;
 
 import javax.swing.*;
 
-import Client.MainMenu.MainMenuPanel;
-
 public class PlayingRoomFrame extends JFrame {
     public PlayingRoomPanel playpanel = new PlayingRoomPanel();
 

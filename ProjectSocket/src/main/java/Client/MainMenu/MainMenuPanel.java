@@ -1,6 +1,7 @@
 package Client.MainMenu;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import Client.Common.Common;
 import Client.Player.PlayerList;
