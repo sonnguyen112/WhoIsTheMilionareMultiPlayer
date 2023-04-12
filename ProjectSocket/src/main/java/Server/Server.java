@@ -298,7 +298,7 @@ public class Server {
                 Boolean corr = false;
                 if (temptAnswer.equals("-1")) {
                     ResultSet rs = stmt
-                            .executeQuery("select * from questions WHERE QuestionID=" + jsonData.get("question"));
+                            .executeQuery("select * from questions WHERE ID=" + jsonData.get("question"));
                     String question = "";
                     int questionId = 0;
                     Integer indexOption = 0;
@@ -307,9 +307,9 @@ public class Server {
                         question = rs_question.getString(2);
                         questionId = rs_question.getInt(1);
                         indexOption = rs_question.getInt(3);
-                        trueAnswer.add(indexOption);
-                        questionList.add(question);
-                        questionListId.add(questionId);
+                        trueAnswer.add(0,indexOption);
+                        questionList.add(0,question);
+                        questionListId.add(0,questionId);
                     }
                     corr = true;
                 } else if (temptAnswer.equals("-2")) {
