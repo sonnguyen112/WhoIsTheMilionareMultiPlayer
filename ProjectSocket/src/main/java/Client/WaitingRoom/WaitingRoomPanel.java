@@ -13,7 +13,7 @@ public class WaitingRoomPanel extends JLabel{
 
     public WaitingRoomPanel(){
             
-            image = new ImageIcon(new ImageIcon("Image/WaitingRoomImg.jpg").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
+            image = new ImageIcon(new ImageIcon("src/main/java/Client/Image/WaitingRoomImg.jpg").getImage().getScaledInstance(Common.WIDTH, Common.HEIGHT, Image.SCALE_SMOOTH));
             this.setLayout(null);
             this.setPreferredSize(new Dimension(1100, 700));
             this.setIcon(image);
@@ -68,12 +68,7 @@ public class WaitingRoomPanel extends JLabel{
 
     public void Update(){
         for (int i = 0; i < PlayerList.getInstance().size(); i++){
-            System.out.print("update waiting");
             name[i].setText(PlayerList.getInstance().get(i).name);
-        }
-
-        if (PlayerList.getInstance().size() == 4){
-            labelOclock.setText("GAME STARTS IN 5 SECONDS");
         }
     }
 }   

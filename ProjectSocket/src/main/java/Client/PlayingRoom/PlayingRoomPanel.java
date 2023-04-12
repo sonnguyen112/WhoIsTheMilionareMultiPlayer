@@ -144,9 +144,13 @@ public class PlayingRoomPanel extends JLabel implements ActionListener{
             ClientSystem.getInstance().sendAnswerToServer(3);
         }
         else if (e.getSource() == skipButton){
-            if (ClientSystem.getInstance().skip){
-                ClientSystem.getInstance().sendAnswerToServer(-1);
+            if (ClientSystem.getInstance().skip == true){
                 ClientSystem.getInstance().skip = false;
+                System.out.println("SKIPPPP");
+                ClientSystem.getInstance().sendAnswerToServer(-1);
+            }
+            else{
+                return;
             }
         }
 
