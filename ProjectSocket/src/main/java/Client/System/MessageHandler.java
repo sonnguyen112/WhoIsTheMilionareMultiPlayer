@@ -40,6 +40,8 @@ public class MessageHandler {
             switch ((String) map.get("event")){
                 case JOINING_ROOM:
                     MainMenuFrame.getInstance().menupanel.notification((String) map.get("mess"), "SERVER");
+                    SocketHandler.getInstance().sendMessage("quit");
+                    SocketHandler.getInstance().stopConnection();
                 break;
                 case UPDATE:
                     PlayerList.getInstance().currentPlayer = (PlayerList.getInstance().currentPlayer + 1) % 4;
@@ -68,13 +70,18 @@ public class MessageHandler {
 
                 case GET_QUESTION:
                     String playerturn = (String) map.get("name_player");
+                    System.out.println("---->BEGIN RESOLVE THIS QUES");
                     for (int i = 0; i < ClientSystem.getInstance().player_number; i++){
-                        if (playerturn.equals(PlayerList.getInstance().getPlayer(i).name)){
-                            PlayingRoomFrame.getInstance().playpanel.player_name[i].setBackground(Color.CYAN);
+                        if (i < PlayerList.getInstance().size()){
+                            if (playerturn.equals(PlayerList.getInstance().getPlayer(i).name)){
+                                PlayingRoomFrame.getInstance().playpanel.player_name[i].setBackground(Color.CYAN);
+                            }
+                            else PlayingRoomFrame.getInstance().playpanel.player_name[i].setBackground(Color.WHITE);
                         }
-                        else PlayingRoomFrame.getInstance().playpanel.player_name[i].setBackground(Color.WHITE);
                     }
 
+                    System.out.println(playerturn);
+                    System.out.println(PlayerList.getInstance().playername);
                     if (PlayerList.getInstance().playername.equals(playerturn)){
                         String currentQues = (String) map.get("question");
                         ClientSystem.getInstance().QuestionID = String.valueOf(map.get("questionId"));
@@ -130,6 +137,7 @@ public class MessageHandler {
                     }
                     else if (!corr){
                         System.out.println("QUIT FOR WRONG ANSWER");
+
                         SocketHandler.getInstance().sendMessage("quit");
                         SocketHandler.getInstance().stopConnection();
                         // PlayingRoomFrame.getInstance().playpanel.notification("Wrong answer, you are dead", "lose");
@@ -137,6 +145,7 @@ public class MessageHandler {
                         WaitingRoomFrame.getInstance().setVisible(false);
                         MainMenuFrame.getInstance().setVisible(true);
                         PlayingRoomFrame.getInstance().setVisible(false);
+                        MainMenuFrame.getInstance().menupanel.notification("YOU LOSE", "lose");
                         ClientSystem.getInstance().state = "join game";
                     }
             }

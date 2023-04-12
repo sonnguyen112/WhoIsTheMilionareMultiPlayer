@@ -16,7 +16,7 @@ public class ClientSystem {
     private static final ClientSystem sys = new ClientSystem();
     public ArrayList<String> currentAnswerID = new ArrayList<>();
     public String QuestionID;
-
+    public boolean skip;
 
     public static ClientSystem getInstance(){
         return sys;
@@ -83,10 +83,10 @@ public class ClientSystem {
     }
 
     public void sendAnswerToServer(int answer_){
-        String answer = "-1";
+        String answer;
         String quesid = ClientSystem.getInstance().QuestionID;
-        if (answer_ == -1) quesid = "-1";
-        else if (answer_ == -2) quesid = "-2";
+        if (answer_ == -1) answer = "-1";
+        else if (answer_ == -2) answer = "-2";
         else{
             answer = ClientSystem.getInstance().currentAnswerID.get(answer_);
         }
@@ -104,6 +104,7 @@ public class ClientSystem {
 
     public void joinGame(String playername){
         //REMEMBER TO SEND THE INFOR OF PLAYER TO SERVER HERE
+        skip = true;
         SocketHandler.getInstance().startConnection();
         SocketHandler.getInstance().sendMessage("{\"event\": \"joinRoom\", \"name\":\""+ playername + "\"}");
     }
