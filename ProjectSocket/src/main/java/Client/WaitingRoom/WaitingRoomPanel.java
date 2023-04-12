@@ -43,7 +43,7 @@ public class WaitingRoomPanel extends JLabel{
             labelOclock.setBounds(175, 15, 700, 100);
             labelOclock.setOpaque(false);
             labelOclock.setFont(new Font("Serif", Font.BOLD, 30));
-            labelOclock.setForeground(Color.black);
+            labelOclock.setForeground(Color.white);
             name[0].setFont(new Font("Serif", Font.PLAIN, 20));
             name[1].setFont(new Font("Serif", Font.PLAIN, 20));
             name[2].setFont(new Font("Serif", Font.PLAIN, 20));
@@ -57,7 +57,7 @@ public class WaitingRoomPanel extends JLabel{
                 name[i].setFont(new Font(null, Font.BOLD, 40));
             }
             labelOclock.setText("GAME IN 3");
-            labelOclock.setBackground(Color.BLACK);
+            labelOclock.setBackground(Color.WHITE);
 
             this.add(name[0]);
             this.add(name[1]);
