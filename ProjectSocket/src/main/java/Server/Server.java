@@ -37,10 +37,11 @@ public class Server {
     Connection con = null;
     ResultSet rs_question = null;
     int curPlayerIndex = 0;
+    boolean isPlaying = false;
 
     public Server() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
-        con = DriverManager.getConnection("jdbc:sqlite:test.db");
+        con = DriverManager.getConnection("jdbc:sqlite:sqlite.db");
         // here sonoo is database name, root is username and password
         stmt = con.createStatement();
         rs_question = stmt.executeQuery("select * from questions");
@@ -211,6 +212,7 @@ public class Server {
         if (data.equalsIgnoreCase(
                 "quit")) {
             // for (int i = 0; i < clients.size(); i++) {
+            clients.remove(client);
             client.close();
             System.out.println("Connection closed...");
             return;
@@ -221,6 +223,7 @@ public class Server {
             for (int i = 0; i < clients.size(); i++) {
                 if (clients.get(i) != client) sendData("reset", clients.get(i));
             }
+            isPlaying = false;
             System.out.println("Connection reset...");
         }
 
@@ -241,8 +244,20 @@ public class Server {
                 String jsonResponse = objectMapper.writeValueAsString(response);
                 sendData(jsonResponse, client);
                 return;
-            } else {
+            } 
+            else if (isPlaying){
+                response.put("event", "joinRoom");
+                response.put("status", "FAIL");
+                response.put("mess", "name full");
+                String jsonResponse = objectMapper.writeValueAsString(response);
+                sendData(jsonResponse, client);
+                return;
+            }            
+            else {
                 namePlayers.add((String) jsonData.get("name"));
+                if (namePlayers.size() == NUM_PLAYER){
+                    isPlaying = true;
+                }
                 response.put("event", "update");
                 response.put("status", "success");
                 response.put("mess", namePlayers);
@@ -319,6 +334,7 @@ public class Server {
                 jsonResponse = "";
                 jsonResponse = objectMapper.writeValueAsString(response);
                 System.out.println("send: " + jsonResponse);
+                System.out.println(clients);
                 for (int i = 0; i < clients.size(); i++) {
                     sendData(jsonResponse, clients.get(i));
                 }
